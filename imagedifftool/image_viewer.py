@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PyQt6.QtCore import Qt, pyqtSignal, QEvent, QPointF
+from PyQt6.QtCore import Qt, pyqtSignal, QEvent, QPointF, QTimer
 from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QResizeEvent, QWheelEvent
 from PyQt6.QtWidgets import (
     QFrame,
@@ -20,8 +20,9 @@ class DropHere(QLabel):
     def __init__(self):
         super().__init__()
 
-        self.setText("Drop Here")
+        self.setAcceptDrops(True)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setText("Drop Here")
         self.setStyleSheet(
             """
             QLabel {
@@ -31,8 +32,6 @@ class DropHere(QLabel):
             }
             """
         )
-
-        self.setAcceptDrops(True)
 
     def dragEnterEvent(self, a0: QDragEnterEvent):
         if a0.mimeData().hasImage:
@@ -47,10 +46,11 @@ class DropHere(QLabel):
             a0.ignore()
 
 
-class ImageObj(QGraphicsView):
+class ImageView(QGraphicsView):
     def __init__(self):
         super().__init__()
-        self._zoom = 0
+
+        self.zoomLevel = 0
 
         self.initUI()
 
@@ -125,7 +125,7 @@ class ImageObj(QGraphicsView):
         return super().mouseReleaseEvent(event)
 
 
-class ImageViewer(QWidget):
+class ImageViewWrapper(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -136,11 +136,11 @@ class ImageViewer(QWidget):
 
         self.dropHere = DropHere()
         self.dropHere.signalFileDropped.connect(self.setImage)
-        self.imageObj = ImageObj()
-        self.imageObj.hide()
+        self.imageView = ImageView()
+        self.imageView.hide()
 
         self.layout().addWidget(self.dropHere)
-        self.layout().addWidget(self.imageObj)
+        self.layout().addWidget(self.imageView)
 
         self.initStatusBar()
 
@@ -150,8 +150,8 @@ class ImageViewer(QWidget):
 
     def setImage(self, imagePath: str):
         self.dropHere.hide()
-        self.imageObj.setImage(imagePath)
-        self.imageObj.show()
+        self.imageView.setImage(imagePath)
+        self.imageView.show()
 
 
 # if __name__ == "__main__":

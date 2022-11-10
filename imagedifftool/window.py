@@ -1,4 +1,4 @@
-from image_viewer import ImageViewer
+from image_viewer import ImageViewWrapper
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QResizeEvent
 from PyQt6.QtWidgets import QDockWidget, QGroupBox, QHBoxLayout, QMainWindow, QSplitter, QTreeView, QWidget
@@ -12,14 +12,13 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle("Image Diff Tool")
-        self.resize(800, 600)
+        self.resize(1200, 800)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
         self.initActions()
         self.initDockWidgetTreeView()
         self.initMenuBar()
         self.initCentralWidget()
-
-        self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
@@ -67,10 +66,10 @@ class MainWindow(QMainWindow):
         widget.setLayout(QHBoxLayout())
         self.setCentralWidget(widget)
 
-        self.leftImageViewer = ImageViewer()
+        self.leftImageViewer = ImageViewWrapper()
         leftGroupBox = self.getImageGroupBox(self.leftImageViewer, "Left")
 
-        self.rightImageViewer = ImageViewer()
+        self.rightImageViewer = ImageViewWrapper()
         rightGroupBox = self.getImageGroupBox(self.rightImageViewer, "Right")
 
         splitter = QSplitter()
@@ -82,7 +81,7 @@ class MainWindow(QMainWindow):
     def slotOpenFile(self, right=False):
         pass
 
-    def getImageGroupBox(self, imageViewer: ImageViewer, title: str) -> QGroupBox:
+    def getImageGroupBox(self, imageViewer: ImageViewWrapper, title: str) -> QGroupBox:
         groupBox = QGroupBox(title)
         groupBox.setLayout(QHBoxLayout())
         groupBox.layout().setContentsMargins(0, 0, 0, 0)
@@ -90,16 +89,18 @@ class MainWindow(QMainWindow):
         return groupBox
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
-        if not self.leftImageViewer.imageObj.zoomLevel:
-            self.leftImageViewer.imageObj.fitImage()
-        if not self.rightImageViewer.imageObj.zoomLevel:
-            self.rightImageViewer.imageObj.fitImage()
+        if not self.leftImageViewer.imageView.zoomLevel:
+            self.leftImageViewer.imageView.fitImage()
+        if not self.rightImageViewer.imageView.zoomLevel:
+            self.rightImageViewer.imageView.fitImage()
         return super().resizeEvent(a0)
+
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
 
     app = QApplication([])
+    app.setStyle("Fusion")
     window = MainWindow()
     window.show()
     app.exec()
