@@ -73,6 +73,9 @@ class ImageView(QGraphicsView):
         if pixmap.isNull():
             return
         self.pixmapItem.setPixmap(pixmap)
+        QTimer.singleShot(0, self.fitImage)
+
+    def fitImage(self):
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
     def wheelEvent(self, event: QWheelEvent):
@@ -95,10 +98,11 @@ class ImageView(QGraphicsView):
             self.fitImage()
 
     def mousePressEvent(self, event: QMouseEvent):
-        if not self._zoom:
+        if not self.zoomLevel:
             return super().mousePressEvent(event)
 
         if event.button() == Qt.MouseButton.RightButton:
+            self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
             modifiedEvent = QMouseEvent(
                 QEvent.Type.MouseButtonPress,
                 QPointF(event.pos()),
@@ -110,10 +114,11 @@ class ImageView(QGraphicsView):
         return super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if not self._zoom:
+        if not self.zoomLevel:
             return super().mouseReleaseEvent(event)
 
         if event.button() == Qt.MouseButton.RightButton:
+            self.setDragMode(QGraphicsView.DragMode.NoDrag)
             modifiedEvent = QMouseEvent(
                 QEvent.Type.MouseButtonRelease,
                 QPointF(event.pos()),
@@ -129,6 +134,7 @@ class ImageView(QGraphicsView):
         if event.type() == QEvent.Type.ContextMenu:
             return True
         return super().event(event)
+
 
 class ImageViewWrapper(QWidget):
     def __init__(self):
@@ -157,14 +163,3 @@ class ImageViewWrapper(QWidget):
         self.dropHere.hide()
         self.imageView.setImage(imagePath)
         self.imageView.show()
-
-
-# if __name__ == "__main__":
-#     from PyQt6.QtWidgets import QApplication
-
-#     app = QApplication([])
-#     imageViewer = ImageViewer()
-#     imageViewer.resize(800, 600)
-#     imageViewer.show()
-#     # imageViewer.setImage("example.jpg")
-#     app.exec()
