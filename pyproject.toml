@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "image-diff-tool"
+version = "0.1.0"
+description = "Select and compare arbitrary regions from images using OpenCV"
+authors = ["overflowy <overflowy@riseup.net>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "image_diff_tool" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyqt6 = "^6.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+strictListInference = true
+strictDictionaryInference = false
+strictParameterNoneValue = true
+reportFunctionMemberAccess = "error"
+reportMissingModuleSource = "none"
+reportMissingTypeStubs = "error"
+reportUnusedImport = "error"
+reportUnusedClass = "error"
+reportUnusedFunction = "error"
+reportUnusedVariable = "error"
+reportDuplicateImport = "error"
+reportOptionalSubscript = "error"
+reportOptionalMemberAccess = "error"
+reportOptionalCall = "error"
+reportOptionalIterable = "error"
+reportOptionalContextManager = "error"
+reportOptionalOperand = "error"
+reportUntypedFunctionDecorator = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedBaseClass = "error"
+reportUntypedNamedTuple = "error"
+reportPrivateUsage = "none"
+reportConstantRedefinition = "error"
+reportIncompatibleMethodOverride = "error"
+reportIncompatibleVariableOverride = "error"
+reportInvalidStringEscapeSequence = "error"
+reportUnknownArgumentType = "error"
+reportUnknownLambdaType = "error"
+reportMissingTypeArgument = "error"
+reportUndefinedVariable = "error"
+reportUnboundVariable = "error"
+reportInvalidStubStatement = "error"
+reportInvalidTypeVarUse = "error"
+reportPropertyTypeMismatch = "error"
+reportSelfClsParameterName = "error"
+reportUnsupportedDunderAll = "error"
+reportOverlappingOverload = "none"
