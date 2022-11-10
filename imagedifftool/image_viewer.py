@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QPixmap, QResizeEvent, QWheelEvent
+from PyQt6.QtCore import Qt, pyqtSignal, QEvent, QPointF
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QResizeEvent, QWheelEvent
 from PyQt6.QtWidgets import (
     QFrame,
     QGraphicsPixmapItem,
@@ -71,10 +71,10 @@ class ImageObj(QGraphicsView):
             return
         if event.angleDelta().y() > 0:
             self._zoom += 1
-            factor = 1.1
+            factor = 1.25
         else:
             self._zoom -= 1
-            factor = 0.9
+            factor = 0.8
 
         if self._zoom > 0:
             self.scale(factor, factor)
@@ -84,6 +84,36 @@ class ImageObj(QGraphicsView):
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
         else:
             self._zoom = 0
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if not self._zoom:
+            return super().mousePressEvent(event)
+
+        if event.button() == Qt.MouseButton.RightButton:
+            modifiedEvent = QMouseEvent(
+                QEvent.Type.MouseButtonPress,
+                QPointF(event.pos()),
+                Qt.MouseButton.LeftButton,
+                event.buttons(),
+                event.modifiers(),
+            )
+            return super().mousePressEvent(modifiedEvent)
+        return super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        if not self._zoom:
+            return super().mouseReleaseEvent(event)
+
+        if event.button() == Qt.MouseButton.RightButton:
+            modifiedEvent = QMouseEvent(
+                QEvent.Type.MouseButtonRelease,
+                QPointF(event.pos()),
+                Qt.MouseButton.LeftButton,
+                event.buttons(),
+                event.modifiers(),
+            )
+            return super().mouseReleaseEvent(modifiedEvent)
+        return super().mouseReleaseEvent(event)
 
 
 class ImageViewer(QWidget):
