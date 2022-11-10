@@ -55,7 +55,7 @@ class ImageObj(QGraphicsView):
         self.initUI()
 
     def initUI(self):
-        self.setBackgroundBrush(QBrush(QColor(45, 45, 45)))
+        self.setBackgroundBrush(QBrush(QColor("#f0f0f0")))
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
@@ -133,11 +133,13 @@ class ImageViewer(QWidget):
 
     def initUI(self):
         self.setLayout(QVBoxLayout())
+
         self.dropHere = DropHere()
-
-        # self.layout().addWidget(self.dropHere)
-
+        self.dropHere.signalFileDropped.connect(self.setImage)
         self.imageObj = ImageObj()
+        self.imageObj.hide()
+
+        self.layout().addWidget(self.dropHere)
         self.layout().addWidget(self.imageObj)
 
         self.initStatusBar()
@@ -147,7 +149,9 @@ class ImageViewer(QWidget):
         self.statusBar.showMessage("Ready")
 
     def setImage(self, imagePath: str):
+        self.dropHere.hide()
         self.imageObj.setImage(imagePath)
+        self.imageObj.show()
 
 
 if __name__ == "__main__":
@@ -157,5 +161,5 @@ if __name__ == "__main__":
     imageViewer = ImageViewer()
     imageViewer.resize(800, 600)
     imageViewer.show()
-    imageViewer.setImage("example.jpg")
+    # imageViewer.setImage("example.jpg")
     app.exec()
