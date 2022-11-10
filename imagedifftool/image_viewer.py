@@ -1,4 +1,19 @@
-from PyQt6.QtWidgets import QGraphicsPixmapItem, QGraphicsScene, QGraphicsView, QStatusBar, QVBoxLayout, QWidget
+from pathlib import Path
+
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QPixmap, QResizeEvent, QWheelEvent
+from PyQt6.QtWidgets import (
+    QFrame,
+    QGraphicsPixmapItem,
+    QGraphicsScene,
+    QGraphicsView,
+    QLabel,
+    QStatusBar,
+    QVBoxLayout,
+    QWidget,
+)
+
+
 class DropHere(QLabel):
     signalFileDropped = pyqtSignal(str)
 
@@ -26,24 +41,48 @@ class DropHere(QLabel):
 class ImageObj(QGraphicsView):
     def __init__(self):
         super().__init__()
+        self._zoom = 0
 
         self.initUI()
 
     def initUI(self):
-        self.scene = QGraphicsScene(self)
+        self.setBackgroundBrush(QBrush(QColor(45, 45, 45)))
+        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
+        self.scene = QGraphicsScene(self)  # pyright: reportGeneralTypeIssues=false
         self.setScene(self.scene)
 
-        self.item = QGraphicsPixmapItem()
-        self.scene.addItem(self.item)
+        self.pixmapItem = QGraphicsPixmapItem()
+        self.scene.addItem(self.pixmapItem)
+
     def setImage(self, imagePath: str):
         fullPath = Path(imagePath).resolve().as_posix()
         pixmap = QPixmap(fullPath)
         if pixmap.isNull():
             return
         self.pixmapItem.setPixmap(pixmap)
+        self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
-    def setImage(self, image: str):
-        pass
+    def wheelEvent(self, event: QWheelEvent):
+        if self.pixmapItem.pixmap().isNull():
+            return
+        if event.angleDelta().y() > 0:
+            self._zoom += 1
+            factor = 1.1
+        else:
+            self._zoom -= 1
+            factor = 0.9
+
+        if self._zoom > 0:
+            self.scale(factor, factor)
+        elif self._zoom == 0:
+            self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
+        else:
+            self._zoom = 0
 
 
 class ImageViewer(QWidget):
@@ -54,6 +93,10 @@ class ImageViewer(QWidget):
 
     def initUI(self):
         self.setLayout(QVBoxLayout())
+        self.dropHere = DropHere()
+
+        # self.layout().addWidget(self.dropHere)
+
         self.imageObj = ImageObj()
         self.layout().addWidget(self.imageObj)
 
@@ -63,5 +106,16 @@ class ImageViewer(QWidget):
         self.statusBar = QStatusBar()
         self.statusBar.showMessage("Ready")
 
-    def setImage(self, image: str):
-        self.imageObj.setImage(image)
+    def setImage(self, imagePath: str):
+        self.imageObj.setImage(imagePath)
+
+
+if __name__ == "__main__":
+    from PyQt6.QtWidgets import QApplication
+
+    app = QApplication([])
+    imageViewer = ImageViewer()
+    imageViewer.resize(800, 600)
+    imageViewer.show()
+    imageViewer.setImage("example.jpg")
+    app.exec()
