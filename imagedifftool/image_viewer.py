@@ -34,8 +34,17 @@ class DropHere(QLabel):
 
         self.setAcceptDrops(True)
 
-    def dragEnterEvent(self, a0: QDragEnterEvent) -> None:
-        return super().dragEnterEvent(a0)
+    def dragEnterEvent(self, a0: QDragEnterEvent):
+        if a0.mimeData().hasImage:
+            a0.acceptProposedAction()
+        else:
+            a0.ignore()
+
+    def dropEvent(self, a0: QDropEvent):
+        if a0.mimeData().hasImage:
+            self.signalFileDropped.emit(a0.mimeData().urls()[0].toLocalFile())
+        else:
+            a0.ignore()
 
 
 class ImageObj(QGraphicsView):
