@@ -13,6 +13,12 @@ class ImageObj(QGraphicsView):
 
         self.item = QGraphicsPixmapItem()
         self.scene.addItem(self.item)
+    def setImage(self, imagePath: str):
+        fullPath = Path(imagePath).resolve().as_posix()
+        pixmap = QPixmap(fullPath)
+        if pixmap.isNull():
+            return
+        self.pixmapItem.setPixmap(pixmap)
 
     def setImage(self, image: str):
         pass
