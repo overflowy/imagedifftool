@@ -78,21 +78,21 @@ class ImageView(QGraphicsView):
     def wheelEvent(self, event: QWheelEvent):
         if self.pixmapItem.pixmap().isNull():
             return
-        if event.angleDelta().y() > 0:
-            self._zoom += 1
-            factor = 1.25
-        else:
-            self._zoom -= 1
-            factor = 0.8
 
-        if self._zoom > 0:
-            self.scale(factor, factor)
-            self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        elif self._zoom == 0:
-            self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
-            self.setDragMode(QGraphicsView.DragMode.NoDrag)
+        if event.angleDelta().y() > 0:
+            factor = 1.25
+            self.zoomLevel += 1
         else:
-            self._zoom = 0
+            factor = 0.8
+            self.zoomLevel -= 1
+
+        if self.zoomLevel > 0:
+            self.scale(factor, factor)
+        elif self.zoomLevel == 0:
+            self.fitImage()
+        else:
+            self.zoomLevel = 0
+            self.fitImage()
 
     def mousePressEvent(self, event: QMouseEvent):
         if not self._zoom:
