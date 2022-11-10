@@ -52,7 +52,6 @@ class ImageObj(QGraphicsView):
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.scene = QGraphicsScene(self)  # pyright: reportGeneralTypeIssues=false
         self.setScene(self.scene)
 
@@ -79,8 +78,10 @@ class ImageObj(QGraphicsView):
 
         if self._zoom > 0:
             self.scale(factor, factor)
+            self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         elif self._zoom == 0:
             self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
+            self.setDragMode(QGraphicsView.DragMode.NoDrag)
         else:
             self._zoom = 0
 
