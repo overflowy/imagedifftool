@@ -1,6 +1,6 @@
 from image_viewer import ImageViewer
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QResizeEvent
 from PyQt6.QtWidgets import QDockWidget, QGroupBox, QHBoxLayout, QMainWindow, QSplitter, QTreeView, QWidget
 
 
@@ -89,6 +89,12 @@ class MainWindow(QMainWindow):
         groupBox.layout().addWidget(imageViewer)
         return groupBox
 
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        if not self.leftImageViewer.imageObj.zoomLevel:
+            self.leftImageViewer.imageObj.fitImage()
+        if not self.rightImageViewer.imageObj.zoomLevel:
+            self.rightImageViewer.imageObj.fitImage()
+        return super().resizeEvent(a0)
 
 if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
