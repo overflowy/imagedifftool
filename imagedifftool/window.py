@@ -21,25 +21,34 @@ class MainWindow(QMainWindow):
 
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
+    # pyright: reportFunctionMemberAccess=false
     def initActions(self):
-        self.actionOpenFile = QAction("Open File", self)
-        self.actionOpenFile.setShortcut("Ctrl+O")
-        self.actionOpenFile.setStatusTip("Open File")
-        self.actionOpenFile.triggered.connect(self.slotOpenFile)
+        self.actioOpenLeft = QAction("Open Left", self)
+        self.actioOpenLeft.setShortcut("Ctrl+L")
+        self.actioOpenLeft.setStatusTip("Open File")
+        self.actioOpenLeft.triggered.connect(self.slotOpenFile)
+
+        self.actionOpenRight = QAction("Open Right", self)
+        self.actionOpenRight.setShortcut("Ctrl+R")
+        self.actionOpenRight.setStatusTip("Open File")
+        self.actionOpenRight.triggered.connect(lambda: self.slotOpenFile(right=True))
 
         self.actionQuit = QAction("Quit", self)
         self.actionQuit.setShortcut("Ctrl+Q")
         self.actionQuit.setStatusTip("Quit")
         self.actionQuit.triggered.connect(self.close)
 
-        self.addAction(self.actionOpenFile)
+        self.addAction(self.actioOpenLeft)
+        self.addAction(self.actionOpenRight)
         self.addAction(self.actionQuit)
 
     def initMenuBar(self):
         menuBar = self.menuBar()
 
         fileMenu = menuBar.addMenu("File")
-        fileMenu.addAction(self.actionOpenFile)
+        fileMenu.addAction(self.actioOpenLeft)
+        fileMenu.addAction(self.actionOpenRight)
+        fileMenu.addSeparator()
         fileMenu.addAction(self.actionQuit)
 
         viewMenu = menuBar.addMenu("View")
