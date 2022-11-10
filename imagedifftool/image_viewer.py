@@ -124,6 +124,11 @@ class ImageView(QGraphicsView):
             return super().mouseReleaseEvent(modifiedEvent)
         return super().mouseReleaseEvent(event)
 
+    def event(self, event: QEvent) -> bool:
+        """Override event to prevent the context menu from appearing."""
+        if event.type() == QEvent.Type.ContextMenu:
+            return True
+        return super().event(event)
 
 class ImageViewWrapper(QWidget):
     def __init__(self):
