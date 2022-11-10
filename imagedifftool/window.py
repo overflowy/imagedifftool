@@ -67,8 +67,11 @@ class MainWindow(QMainWindow):
         widget.setLayout(QHBoxLayout())
         self.setCentralWidget(widget)
 
-        leftGroupBox = QGroupBox("Left")
-        rightGroupBox = QGroupBox("Right")
+        self.leftImageViewer = ImageViewer()
+        leftGroupBox = self.getImageGroupBox(self.leftImageViewer, "Left")
+
+        self.rightImageViewer = ImageViewer()
+        rightGroupBox = self.getImageGroupBox(self.rightImageViewer, "Right")
 
         splitter = QSplitter()
         splitter.addWidget(leftGroupBox)
@@ -78,6 +81,13 @@ class MainWindow(QMainWindow):
 
     def slotOpenFile(self, right=False):
         pass
+
+    def getImageGroupBox(self, imageViewer: ImageViewer, title: str) -> QGroupBox:
+        groupBox = QGroupBox(title)
+        groupBox.setLayout(QHBoxLayout())
+        groupBox.layout().setContentsMargins(0, 0, 0, 0)
+        groupBox.layout().addWidget(imageViewer)
+        return groupBox
 
 
 if __name__ == "__main__":

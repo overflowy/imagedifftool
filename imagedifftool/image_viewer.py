@@ -154,12 +154,12 @@ class ImageViewer(QWidget):
         self.imageObj.show()
 
 
-if __name__ == "__main__":
-    from PyQt6.QtWidgets import QApplication
+# if __name__ == "__main__":
+#     from PyQt6.QtWidgets import QApplication
 
-    app = QApplication([])
-    imageViewer = ImageViewer()
-    imageViewer.resize(800, 600)
-    imageViewer.show()
-    # imageViewer.setImage("example.jpg")
-    app.exec()
+#     app = QApplication([])
+#     imageViewer = ImageViewer()
+#     imageViewer.resize(800, 600)
+#     imageViewer.show()
+#     # imageViewer.setImage("example.jpg")
+#     app.exec()
