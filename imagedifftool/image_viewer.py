@@ -162,6 +162,12 @@ class ImageView(QGraphicsView):
             return True
         return super().event(event)
 
+    def enterEvent(self, event: QEvent):
+        self.setCursor(Qt.CursorShape.CrossCursor)
+
+    def leaveEvent(self, a0: QEvent):
+        self.setCursor(Qt.CursorShape.ArrowCursor)
+
 
 class ImageViewWrapper(QWidget):
     def __init__(self):
