@@ -1,4 +1,4 @@
-from image_viewer import ImageViewWrapper
+from image_view import ImageViewWrapper
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QResizeEvent
 from PyQt6.QtWidgets import QDockWidget, QGroupBox, QHBoxLayout, QMainWindow, QSplitter, QTreeView, QWidget
