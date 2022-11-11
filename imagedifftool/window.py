@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
 
     def initDockWidgetTreeView(self):
         self.dockWidgetTreeView = QDockWidget("Regions")
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockWidgetTreeView)
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetTreeView)
 
         treeView = QTreeView()
         self.dockWidgetTreeView.setWidget(treeView)
@@ -64,6 +64,7 @@ class MainWindow(QMainWindow):
     def initCentralWidget(self):
         widget = QWidget()
         widget.setLayout(QHBoxLayout())
+        widget.layout().setContentsMargins(5, 5, 5, 5)
         self.setCentralWidget(widget)
 
         self.leftImageViewer = ImageViewWrapper()
