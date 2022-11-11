@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import Optional
 
+import cv2
+from image_tools import _debugShowOpenCVRect, getOpenCVImage, openCVToQImage
 from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent
 from PyQt6.QtWidgets import (
@@ -55,6 +56,7 @@ class ImageView(QGraphicsView):
         self.zoomLevel = 0
         self.prevFromScenePoint: QPointF
         self.prevToScenePoint: QPointF
+        self.openCVImage: cv2.Mat
 
         self.initUI()
 
@@ -95,10 +97,14 @@ class ImageView(QGraphicsView):
 
     def setImage(self, imagePath: str):
         fullPath = Path(imagePath).resolve().as_posix()
-        pixmap = QPixmap(fullPath)
-        if pixmap.isNull():
-            return
-        self.pixmapItem.setPixmap(pixmap)
+
+        # TODO: Check if image has been correctly loaded.
+        self.openCVImage = getOpenCVImage(fullPath)
+        self.pixmapItem.setPixmap(QPixmap.fromImage(openCVToQImage(self.openCVImage)))
+        # pixmap = QPixmap(fullPath)
+        # if pixmap.isNull():
+        #     return
+        # self.pixmapItem.setPixmap(pixmap)
         QTimer.singleShot(0, self.fitImage)
         self.scene().setSceneRect(self.pixmapItem.boundingRect())
 
@@ -145,7 +151,7 @@ class ImageView(QGraphicsView):
             return super().mouseReleaseEvent(event)
 
         if event.button() == Qt.MouseButton.RightButton:
-            self.setDragMode(QGraphicsView.DragMode.NoDrag)
+            self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
             modifiedEvent = QMouseEvent(
                 QEvent.Type.MouseButtonRelease,
                 QPointF(event.pos()),
