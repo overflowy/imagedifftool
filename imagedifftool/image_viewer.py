@@ -1,10 +1,12 @@
 from pathlib import Path
+from typing import Optional
 
-from PyQt6.QtCore import Qt, pyqtSignal, QEvent, QPointF, QTimer
-from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QResizeEvent, QWheelEvent
+from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent
 from PyQt6.QtWidgets import (
     QFrame,
     QGraphicsPixmapItem,
+    QGraphicsRectItem,
     QGraphicsScene,
     QGraphicsView,
     QLabel,
@@ -51,21 +53,45 @@ class ImageView(QGraphicsView):
         super().__init__()
 
         self.zoomLevel = 0
+        self.prevFromScenePoint: QPointF
+        self.prevToScenePoint: QPointF
 
         self.initUI()
 
     def initUI(self):
-        self.setBackgroundBrush(QBrush(QColor("#f0f0f0")))
+        self.setBackgroundBrush(QBrush(QColor("#000000")))
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scene = QGraphicsScene(self)  # pyright: reportGeneralTypeIssues=false
-        self.setScene(self.scene)
+
+        self.setScene(QGraphicsScene(self))
 
         self.pixmapItem = QGraphicsPixmapItem()
-        self.scene.addItem(self.pixmapItem)
+        self.pixmapItem.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
+        self.pixmapItem.setFlags(QGraphicsPixmapItem.GraphicsItemFlag.ItemClipsChildrenToShape)
+
+        self.scene().addItem(self.pixmapItem)
+
+        self.rubberBandChanged.connect(self.addRectToScene)
+
+    def addRectToScene(self, rubberBandRect: QRect, fromScenePoint: QPointF, toScenePoint: QPointF):
+        if rubberBandRect.isNull():  # Selection stopped.
+            graphicsRectItem = QGraphicsRectItem(
+                self.prevFromScenePoint.x(),
+                self.prevFromScenePoint.y(),
+                self.prevToScenePoint.x() - self.prevFromScenePoint.x(),
+                self.prevToScenePoint.y() - self.prevFromScenePoint.y(),
+            )
+            print(graphicsRectItem.rect())
+            graphicsRectItem.setParentItem(self.pixmapItem)
+            graphicsRectItem.setPen(QColor(Qt.GlobalColor.red))
+            print(graphicsRectItem.rect())
+        else:
+            self.prevFromScenePoint = fromScenePoint
+            self.prevToScenePoint = toScenePoint
 
     def setImage(self, imagePath: str):
         fullPath = Path(imagePath).resolve().as_posix()
@@ -74,6 +100,7 @@ class ImageView(QGraphicsView):
             return
         self.pixmapItem.setPixmap(pixmap)
         QTimer.singleShot(0, self.fitImage)
+        self.scene().setSceneRect(self.pixmapItem.boundingRect())
 
     def fitImage(self):
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
