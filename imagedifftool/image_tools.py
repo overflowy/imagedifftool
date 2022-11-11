@@ -14,7 +14,7 @@ def openCVToQImage(openCVImage: cv2.Mat) -> QImage:
     return QImage(openCVImage.data, openCVImage.shape[1], openCVImage.shape[0], QImage.Format.Format_BGR888)
 
 
-def _debugShowOpenCVRect(
+def debugShowOpenCVRect(
     openCVImage: cv2.Mat,
     topLeft: tuple[int, int],
     bottomRight: tuple[int, int],
