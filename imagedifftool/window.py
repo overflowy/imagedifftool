@@ -37,6 +37,16 @@ class MainWindow(QMainWindow):
         self.actionQuit.setStatusTip("Quit")
         self.actionQuit.triggered.connect(self.close)
 
+        self.undoAction = QAction("Undo", self)
+        self.undoAction.setShortcut("Ctrl+Z")
+        self.undoAction.setStatusTip("Undo")
+        self.undoAction.triggered.connect(self.slotUndo)
+
+        self.redoAction = QAction("Redo", self)
+        self.redoAction.setShortcut("Ctrl+Y")
+        self.redoAction.setStatusTip("Redo")
+        self.redoAction.triggered.connect(self.slotRedo)
+
         self.addAction(self.actioOpenLeft)
         self.addAction(self.actionOpenRight)
         self.addAction(self.actionQuit)
@@ -50,7 +60,14 @@ class MainWindow(QMainWindow):
         fileMenu.addSeparator()
         fileMenu.addAction(self.actionQuit)
 
+        editMenu = menuBar.addMenu("Edit")
+        editMenu.addAction(self.undoAction)
+        editMenu.addAction(self.redoAction)
+        editMenu.addSeparator()
+
         viewMenu = menuBar.addMenu("View")
+        zoomMenu = viewMenu.addMenu("Zoom")
+
         appearanceMenu = viewMenu.addMenu("Layout")
         appearanceMenu.addAction(self.dockWidgetTreeView.toggleViewAction())
 
@@ -80,6 +97,12 @@ class MainWindow(QMainWindow):
         widget.layout().addWidget(splitter)
 
     def slotOpenFile(self, right=False):
+        pass
+
+    def slotUndo(self):
+        pass
+
+    def slotRedo(self):
         pass
 
     def getImageGroupBox(self, imageViewer: ImageViewWrapper, title: str) -> QGroupBox:
