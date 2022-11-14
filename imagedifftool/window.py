@@ -68,8 +68,8 @@ class MainWindow(QMainWindow):
         viewMenu = menuBar.addMenu("View")
         zoomMenu = viewMenu.addMenu("Zoom")
 
-        appearanceMenu = viewMenu.addMenu("Layout")
-        appearanceMenu.addAction(self.dockWidgetTreeView.toggleViewAction())
+        panelMenu = viewMenu.addMenu("Panels")
+        panelMenu.addAction(self.dockWidgetTreeView.toggleViewAction())
 
     def initDockWidgetTreeView(self):
         self.dockWidgetTreeView = QDockWidget("Regions")
