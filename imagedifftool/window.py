@@ -144,16 +144,23 @@ class MainWindow(QMainWindow):
         groupBox.layout().addWidget(imageViewer)
         return groupBox
 
-    def resizeEvent(self, a0: QResizeEvent) -> None:
+    def resizeEvent(self, a0: QResizeEvent):
         if not self.leftImageViewer.imageView.zoomLevel:
             self.leftImageViewer.imageView.fitImage()
         if not self.rightImageViewer.imageView.zoomLevel:
             self.rightImageViewer.imageView.fitImage()
         return super().resizeEvent(a0)
 
+    def closeEvent(self, a0: QCloseEvent):
+        self.settings.setValue("UI/geometry", self.saveGeometry())
+        self.settings.setValue("UI/windowState", self.saveState())
+        super().closeEvent(a0)
+
 
 if __name__ == "__main__":
-    app = QApplication([])
+    from PyQt6.QtWidgets import QApplication
+
+    app = QApplication(sys.argv)
     app.setStyle("Fusion")
     window = MainWindow()
     window.show()
