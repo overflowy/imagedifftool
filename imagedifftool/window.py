@@ -1,7 +1,10 @@
 from image_view import ImageViewWrapper
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QResizeEvent
-from PyQt6.QtWidgets import QDockWidget, QGroupBox, QHBoxLayout, QMainWindow, QSplitter, QTreeView, QWidget
+from PyQt6.QtGui import QAction, QResizeEvent, QFileSystemModel
+from PyQt6.QtWidgets import QDockWidget, QGroupBox, QHBoxLayout, QListView, QMainWindow, QSplitter, QTreeView, QWidget
+
+
+TEMP_DIR = "temp"
 
 
 class MainWindow(QMainWindow):
@@ -16,7 +19,8 @@ class MainWindow(QMainWindow):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
         self.initActions()
-        self.initDockWidgetTreeView()
+        self.initSelectedRegions()
+        self.initSamples()
         self.initMenuBar()
         self.initCentralWidget()
 
@@ -69,14 +73,22 @@ class MainWindow(QMainWindow):
         zoomMenu = viewMenu.addMenu("Zoom")
 
         panelMenu = viewMenu.addMenu("Panels")
-        panelMenu.addAction(self.dockWidgetTreeView.toggleViewAction())
+        panelMenu.addAction(self.dockWidgetSelectedRegions.toggleViewAction())
+        panelMenu.addAction(self.dockWidgetSamples.toggleViewAction())
 
-    def initDockWidgetTreeView(self):
-        self.dockWidgetTreeView = QDockWidget("Regions")
-        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetTreeView)
+    def initSelectedRegions(self):
+        self.dockWidgetSelectedRegions = QDockWidget("Selected Regions")
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetSelectedRegions)
 
         treeView = QTreeView()
-        self.dockWidgetTreeView.setWidget(treeView)
+        self.dockWidgetSelectedRegions.setWidget(treeView)
+
+    def initSamples(self):
+        self.dockWidgetSamples = QDockWidget("Samples")
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetSamples)
+
+        listView = QListView()
+        self.dockWidgetSamples.setWidget(listView)
 
     def initCentralWidget(self):
         widget = QWidget()
