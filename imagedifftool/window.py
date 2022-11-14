@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from image_view import ImageViewWrapper
 from PyQt6.QtCore import QSettings, Qt
@@ -36,7 +35,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle("Image Diff Tool")
-        self.resize(1200, 800)
+        self.resize(1400, 800)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
         self.initActions()
@@ -99,14 +98,14 @@ class MainWindow(QMainWindow):
 
     def initSelectedRegions(self):
         self.dockWidgetSelectedRegions = QDockWidget("Selected Regions")
-        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetSelectedRegions)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSelectedRegions)
 
         treeView = QTreeView()
         self.dockWidgetSelectedRegions.setWidget(treeView)
 
     def initSamples(self):
         self.dockWidgetSamples = QDockWidget("Samples")
-        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.dockWidgetSamples)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamples)
 
         listView = QListView()
         self.dockWidgetSamples.setWidget(listView)
