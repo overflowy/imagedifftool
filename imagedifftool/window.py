@@ -1,17 +1,38 @@
+import os
+from pathlib import Path
+
 from image_view import ImageViewWrapper
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QResizeEvent, QFileSystemModel
-from PyQt6.QtWidgets import QDockWidget, QGroupBox, QHBoxLayout, QListView, QMainWindow, QSplitter, QTreeView, QWidget
-
-
-TEMP_DIR = "temp"
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtGui import QAction, QFileSystemModel, QResizeEvent
+from PyQt6.QtWidgets import (
+    QApplication,
+    QDockWidget,
+    QGroupBox,
+    QHBoxLayout,
+    QListView,
+    QMainWindow,
+    QSplitter,
+    QTreeView,
+    QWidget,
+)
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.initSettings()
         self.initUI()
+
+    def initSettings(self):
+        if cfgPath := os.getenv("IDT_CFG"):
+            self.settings = QSettings(cfgPath, QSettings.Format.IniFormat)
+        else:
+            self.settings = QSettings("config.ini", QSettings.Format.IniFormat)
+            self.initDefaultSettings()
+
+    def initDefaultSettings(self):
+        pass
 
     def initUI(self):
         self.setWindowTitle("Image Diff Tool")
@@ -133,8 +154,6 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    from PyQt6.QtWidgets import QApplication
-
     app = QApplication([])
     app.setStyle("Fusion")
     window = MainWindow()
