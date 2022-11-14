@@ -24,11 +24,16 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def initSettings(self):
-        if cfgPath := os.getenv("IDT_CFG"):
-            self.settings = QSettings(cfgPath, QSettings.Format.IniFormat)
-        else:
-            self.settings = QSettings("config.ini", QSettings.Format.IniFormat)
+        self.settings = QSettings(
+            QSettings.Format.IniFormat,
+            QSettings.Scope.UserScope,
+            "overflowy@github",
+            "ImageDiffTool",
+        )
+        if not self.settings.contains("UI/geometry"):  # First run.
             self.initDefaultSettings()
+        else:
+            QTimer.singleShot(0, self.restoreSettings)
 
     def initDefaultSettings(self):
         pass
