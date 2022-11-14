@@ -1,10 +1,9 @@
-import os
+import sys
 
 from image_view import ImageViewWrapper
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtGui import QAction, QFileSystemModel, QResizeEvent
+from PyQt6.QtCore import QSettings, Qt, QTimer
+from PyQt6.QtGui import QAction, QCloseEvent, QFileSystemModel, QResizeEvent
 from PyQt6.QtWidgets import (
-    QApplication,
     QDockWidget,
     QGroupBox,
     QHBoxLayout,
@@ -36,7 +35,12 @@ class MainWindow(QMainWindow):
             QTimer.singleShot(0, self.restoreSettings)
 
     def initDefaultSettings(self):
-        pass
+        self.settings.setValue("UI/geometry", self.saveGeometry())
+        self.settings.setValue("UI/windowState", self.saveState())
+
+    def restoreSettings(self):
+        self.restoreGeometry(self.settings.value("UI/geometry"))
+        self.restoreState(self.settings.value("UI/windowState"))
 
     def initUI(self):
         self.setWindowTitle("Image Diff Tool")
@@ -101,8 +105,12 @@ class MainWindow(QMainWindow):
         panelMenu.addAction(self.dockWidgetSelectedRegions.toggleViewAction())
         panelMenu.addAction(self.dockWidgetSamples.toggleViewAction())
 
+        settingsMenu = menuBar.addMenu("Settings")
+        settingsMenu.addAction("Restore Default Settings")
+
     def initSelectedRegions(self):
         self.dockWidgetSelectedRegions = QDockWidget("Selected Regions")
+        self.dockWidgetSelectedRegions.setObjectName("selectedRegionsPanel")
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSelectedRegions)
 
         treeView = QTreeView()
@@ -110,6 +118,7 @@ class MainWindow(QMainWindow):
 
     def initSamples(self):
         self.dockWidgetSamples = QDockWidget("Samples")
+        self.dockWidgetSamples.setObjectName("samplesPanel")
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamples)
 
         listView = QListView()
