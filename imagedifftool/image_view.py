@@ -14,6 +14,7 @@ from PyQt6.QtWidgets import (
     QStatusBar,
     QVBoxLayout,
     QWidget,
+    QMessageBox,
 )
 
 
@@ -99,18 +100,21 @@ class ImageView(QGraphicsView):
             self.prevFromScenePoint = fromScenePoint
             self.prevToScenePoint = toScenePoint
 
-    def setImage(self, imagePath: str):
-        fullPath = Path(imagePath).resolve().as_posix()
+    def setImage(self, filePath: str) -> bool:
+        """Set the image to be displayed in the view.
+        Returns True if the image was successfully loaded, False otherwise."""
 
-        # TODO: Check if image has been correctly loaded.
+        fullPath = Path(filePath).resolve().as_posix()
+
         self.openCVImage = getOpenCVImage(fullPath)
+        if self.openCVImage is None:
+            QMessageBox.critical(self, "Error", "Could not load image. Image may be corrupt or unsupported.")
+            return False
+
         self.pixmapItem.setPixmap(QPixmap.fromImage(openCVToQImage(self.openCVImage)))
-        # pixmap = QPixmap(fullPath)
-        # if pixmap.isNull():
-        #     return
-        # self.pixmapItem.setPixmap(pixmap)
         QTimer.singleShot(0, self.fitImage)
         self.scene().setSceneRect(self.pixmapItem.boundingRect())
+        return True
 
     def fitImage(self):
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
@@ -202,7 +206,7 @@ class ImageViewWrapper(QWidget):
         self.statusBar = QStatusBar()
         self.statusBar.showMessage("Ready")
 
-    def setImage(self, imagePath: str):
-        self.dropHere.hide()
-        self.imageView.setImage(imagePath)
-        self.imageView.show()
+    def setImage(self, filePath: str):
+        if self.imageView.setImage(filePath):
+            self.dropHere.hide()
+            self.imageView.show()
