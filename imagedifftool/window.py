@@ -50,9 +50,26 @@ class MainWindow(QMainWindow):
 
     def initToolBar(self):
         self.toolBar = QToolBar("Main Tool Bar")
+        self.toolBar.setIconSize(QSize(24, 24))
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolBar)
 
-        self.actionMousePointer = self.toolBar.addAction(self.getIconFromSvg(icons.mousePointer), "Mouse Pointer")
+        self.toolBar.addAction(self.getIconFromSvg(icons.run), "Run", lambda: None)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.getIconFromSvg(icons.pointer), "Pointer", self.slotPointer)
+        self.toolBar.addAction(self.getIconFromSvg(icons.marquee), "Select Region", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.move), "Move", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.crop), "Crop to Selection", lambda: None)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", lambda: None)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.getIconFromSvg(icons.rotateClockwise), "Rotato Clockwise", lambda: None)
+        self.toolBar.addAction(
+            self.getIconFromSvg(icons.rotateCounterClockwise), "Rotato Counter-Clockwise", lambda: None
+        )
+        self.toolBar.addAction(self.getIconFromSvg(icons.flipHorizontal), "Flip Horizontal", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.flipVertical), "Flip Vertical", lambda: None)
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
