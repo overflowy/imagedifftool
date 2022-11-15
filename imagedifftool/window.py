@@ -1,9 +1,10 @@
 import sys
 
 from image_view import ImageViewDropHere, ImageView
-from PyQt6.QtCore import QSettings, Qt, QTimer
-from PyQt6.QtGui import QAction, QCloseEvent, QFileSystemModel, QResizeEvent
+from PyQt6.QtCore import QSettings, Qt, QTimer, QByteArray
+from PyQt6.QtGui import QAction, QCloseEvent, QFileSystemModel, QResizeEvent, QPalette, QColor, QIcon, QPixmap, QImage
 from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QTreeView, QToolBar
+import icons
 
 
 class MainWindow(QMainWindow):
@@ -50,6 +51,8 @@ class MainWindow(QMainWindow):
     def initToolBar(self):
         self.toolBar = QToolBar("Main Tool Bar")
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolBar)
+
+        self.actionMousePointer = self.toolBar.addAction(self.getIconFromSvg(icons.mousePointer), "Mouse Pointer")
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
@@ -160,6 +163,26 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    darkPalette = QPalette()
+    darkPalette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
+    darkPalette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
+    darkPalette.setColor(QPalette.ColorRole.Base, QColor(35, 35, 35))
+    darkPalette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
+    darkPalette.setColor(QPalette.ColorRole.ToolTipBase, QColor(25, 25, 25))
+    darkPalette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
+    darkPalette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
+    darkPalette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
+    darkPalette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
+    darkPalette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    darkPalette.setColor(QPalette.ColorRole.Link, QColor(238, 49, 36))
+    darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(238, 49, 36))
+    darkPalette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
+    darkPalette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, QColor(53, 53, 53))
+    darkPalette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, Qt.GlobalColor.darkGray)
+    darkPalette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.WindowText, Qt.GlobalColor.darkGray)
+    darkPalette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, Qt.GlobalColor.darkGray)
+    darkPalette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Light, QColor(53, 53, 53))
+    app.setPalette(darkPalette)
     window = MainWindow()
     window.show()
     app.exec()
