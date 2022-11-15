@@ -3,16 +3,7 @@ import sys
 from image_view import ImageViewWrapper
 from PyQt6.QtCore import QSettings, Qt, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent, QFileSystemModel, QResizeEvent
-from PyQt6.QtWidgets import (
-    QDockWidget,
-    QGroupBox,
-    QHBoxLayout,
-    QListView,
-    QMainWindow,
-    QSplitter,
-    QTreeView,
-    QWidget,
-)
+from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QTreeView
 
 
 class MainWindow(QMainWindow):
@@ -48,10 +39,11 @@ class MainWindow(QMainWindow):
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
         self.initActions()
+        self.initReferenceView()
         self.initSelectedRegions()
+        self.initSamplePreview()
         self.initSamples()
         self.initMenuBar()
-        self.initCentralWidget()
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
@@ -124,25 +116,17 @@ class MainWindow(QMainWindow):
         listView = QListView()
         self.dockWidgetSamples.setWidget(listView)
 
-    def initCentralWidget(self):
-        widget = QWidget()
-        widget.setLayout(QHBoxLayout())
-        widget.layout().setContentsMargins(5, 5, 5, 5)
-        self.setCentralWidget(widget)
+    def initReferenceView(self):
+        self.referenceView = ImageViewWrapper()
+        self.setCentralWidget(self.referenceView)
 
-        self.leftImageViewer = ImageViewWrapper()
-        leftGroupBox = self.getImageGroupBox(self.leftImageViewer, "Left")
+    def initSamplePreview(self):
+        self.dockWidgetSamplePreview = QDockWidget("Sample Preview")
+        self.sampleImageView = ImageViewWrapper()
+        self.dockWidgetSamplePreview.setWidget(self.sampleImageView)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamplePreview)
 
-        self.rightImageViewer = ImageViewWrapper()
-        rightGroupBox = self.getImageGroupBox(self.rightImageViewer, "Right")
-
-        splitter = QSplitter()
-        splitter.addWidget(leftGroupBox)
-        splitter.addWidget(rightGroupBox)
-
-        widget.layout().addWidget(splitter)
-
-    def slotOpenFile(self, right=False):
+    def slotOpenFile(self):
         pass
 
     def slotUndo(self):
@@ -151,18 +135,9 @@ class MainWindow(QMainWindow):
     def slotRedo(self):
         pass
 
-    def getImageGroupBox(self, imageViewer: ImageViewWrapper, title: str) -> QGroupBox:
-        groupBox = QGroupBox(title)
-        groupBox.setLayout(QHBoxLayout())
-        groupBox.layout().setContentsMargins(0, 0, 0, 0)
-        groupBox.layout().addWidget(imageViewer)
-        return groupBox
-
     def resizeEvent(self, a0: QResizeEvent):
-        if not self.leftImageViewer.imageView.zoomLevel:
-            self.leftImageViewer.imageView.fitImage()
-        if not self.rightImageViewer.imageView.zoomLevel:
-            self.rightImageViewer.imageView.fitImage()
+        if not self.referenceView.imageView.zoomLevel:
+            self.referenceView.imageView.fitImage()
         return super().resizeEvent(a0)
 
     def closeEvent(self, a0: QCloseEvent):
