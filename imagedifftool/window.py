@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
             "overflowy@github",
             "ImageDiffTool",
         )
+        self.settings.clear()  # DEBUG: Remove this line.
         if not self.settings.contains("UI/geometry"):  # First run.
             self.initDefaultSettings()
         else:
@@ -38,12 +39,17 @@ class MainWindow(QMainWindow):
         self.resize(1400, 800)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
+        self.initToolBar()
         self.initActions()
         self.initReferenceView()
-        self.initSelectedRegions()
         self.initSamplePreview()
         self.initSamples()
+        self.initSelectedRegions()
         self.initMenuBar()
+
+    def initToolBar(self):
+        self.toolBar = QToolBar("Main Tool Bar")
+        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolBar)
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
@@ -55,7 +61,7 @@ class MainWindow(QMainWindow):
         self.actionOpenRight = QAction("Open Right", self)
         self.actionOpenRight.setShortcut("Ctrl+R")
         self.actionOpenRight.setStatusTip("Open File")
-        self.actionOpenRight.triggered.connect(lambda: self.slotOpenFile(right=True))
+        self.actionOpenRight.triggered.connect(self.slotOpenFile)
 
         self.actionQuit = QAction("Quit", self)
         self.actionQuit.setShortcut("Ctrl+Q")
@@ -117,12 +123,12 @@ class MainWindow(QMainWindow):
         self.dockWidgetSamples.setWidget(listView)
 
     def initReferenceView(self):
-        self.referenceView = ImageViewWrapper()
+        self.referenceView = ImageViewDropHere()
         self.setCentralWidget(self.referenceView)
 
     def initSamplePreview(self):
         self.dockWidgetSamplePreview = QDockWidget("Sample Preview")
-        self.sampleImageView = ImageViewWrapper()
+        self.sampleImageView = ImageView()
         self.dockWidgetSamplePreview.setWidget(self.sampleImageView)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamplePreview)
 
