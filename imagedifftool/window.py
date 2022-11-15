@@ -132,6 +132,9 @@ class MainWindow(QMainWindow):
         self.dockWidgetSamplePreview.setWidget(self.sampleImageView)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamplePreview)
 
+    def getIconFromSvg(self, svgBytes: QByteArray) -> QIcon:
+        return QIcon(QPixmap.fromImage(QImage.fromData(svgBytes)))
+
     def slotOpenFile(self):
         pass
 
