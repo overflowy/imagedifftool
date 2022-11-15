@@ -28,6 +28,16 @@ class MainWindow(QMainWindow):
             QTimer.singleShot(0, self.restoreSettings)
 
     def initDefaultSettings(self):
+        self.resizeDocks(
+            [self.dockWidgetSamplePreview, self.dockWidgetSamples, self.dockWidgetSelectedRegions],
+            [300, 300, 300],
+            Qt.Orientation.Horizontal,
+        )
+        self.resizeDocks(
+            [self.dockWidgetSamplePreview, self.dockWidgetSamples, self.dockWidgetSelectedRegions],
+            [200, 200, 200],
+            Qt.Orientation.Vertical,
+        )
         self.settings.setValue("UI/geometry", self.saveGeometry())
         self.settings.setValue("UI/windowState", self.saveState())
 
