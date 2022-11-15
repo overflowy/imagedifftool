@@ -183,7 +183,7 @@ class ImageView(QGraphicsView):
         self.setCursor(Qt.CursorShape.ArrowCursor)
 
 
-class ImageViewWrapper(QWidget):
+class ImageViewDropHere(QWidget):
     def __init__(self):
         super().__init__()
 

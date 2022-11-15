@@ -1,9 +1,9 @@
 import sys
 
-from image_view import ImageViewWrapper
+from image_view import ImageViewDropHere, ImageView
 from PyQt6.QtCore import QSettings, Qt, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent, QFileSystemModel, QResizeEvent
-from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QTreeView
+from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QTreeView, QToolBar
 
 
 class MainWindow(QMainWindow):
