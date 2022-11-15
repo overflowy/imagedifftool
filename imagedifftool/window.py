@@ -1,18 +1,18 @@
 import sys
 
-from image_view import ImageViewDropHere, ImageView
-from PyQt6.QtCore import QSettings, Qt, QTimer, QByteArray
-from PyQt6.QtGui import QAction, QCloseEvent, QFileSystemModel, QResizeEvent, QPalette, QColor, QIcon, QPixmap, QImage
-from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QTreeView, QToolBar
 import icons
+from image_view import ImageView, ImageViewDropHere
+from PyQt6.QtCore import QSettings, QSize, Qt, QTimer
+from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFileSystemModel, QIcon, QImage, QPalette, QPixmap, QResizeEvent
+from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QToolBar, QTreeView
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.initSettings()
         self.initUI()
+        self.initSettings()
 
     def initSettings(self):
         self.settings = QSettings(
@@ -60,12 +60,12 @@ class MainWindow(QMainWindow):
 
     def initToolBar(self):
         self.toolBar = QToolBar("Main Tool Bar")
-        self.toolBar.setIconSize(QSize(24, 24))
+        self.toolBar.setIconSize(QSize(18, 18))
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolBar)
 
         self.toolBar.addAction(self.getIconFromSvg(icons.run), "Run", lambda: None)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.getIconFromSvg(icons.pointer), "Pointer", self.slotPointer)
+        self.toolBar.addAction(self.getIconFromSvg(icons.pointer), "Pointer", lambda: None)
         self.toolBar.addAction(self.getIconFromSvg(icons.marquee), "Select Region", lambda: None)
         self.toolBar.addAction(self.getIconFromSvg(icons.move), "Move", lambda: None)
         self.toolBar.addAction(self.getIconFromSvg(icons.crop), "Crop to Selection", lambda: None)
@@ -101,11 +101,13 @@ class MainWindow(QMainWindow):
         self.undoAction = QAction("Undo", self)
         self.undoAction.setShortcut("Ctrl+Z")
         self.undoAction.setStatusTip("Undo")
+        self.undoAction.setIcon(self.getIconFromSvg(icons.undo))
         self.undoAction.triggered.connect(self.slotUndo)
 
         self.redoAction = QAction("Redo", self)
         self.redoAction.setShortcut("Ctrl+Y")
         self.redoAction.setStatusTip("Redo")
+        self.redoAction.setIcon(self.getIconFromSvg(icons.redo))
         self.redoAction.triggered.connect(self.slotRedo)
 
         self.addAction(self.actioOpenLeft)
@@ -162,10 +164,14 @@ class MainWindow(QMainWindow):
         self.dockWidgetSamplePreview.setWidget(self.sampleImageView)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamplePreview)
 
-    def getIconFromSvg(self, svgBytes: QByteArray) -> QIcon:
-        return QIcon(QPixmap.fromImage(QImage.fromData(svgBytes)))
+    def getIconFromSvg(self, svgStr: str) -> QIcon:
+        pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
+        return QIcon(pixmap)
 
     def slotOpenFile(self):
+        pass
+
+    def slotPointer(self):
         pass
 
     def slotUndo(self):
@@ -201,8 +207,8 @@ if __name__ == "__main__":
     darkPalette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
     darkPalette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
     darkPalette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
-    darkPalette.setColor(QPalette.ColorRole.Link, QColor(238, 49, 36))
-    darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(238, 49, 36))
+    darkPalette.setColor(QPalette.ColorRole.Link, QColor(91, 91, 91))
+    darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(91, 91, 91))
     darkPalette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
     darkPalette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, QColor(53, 53, 53))
     darkPalette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, Qt.GlobalColor.darkGray)
