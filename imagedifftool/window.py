@@ -71,8 +71,8 @@ class MainWindow(QMainWindow):
         self.toolBar.addAction(self.getIconFromSvg(icons.crop), "Crop to Selection", lambda: None)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
-        self.toolBar.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", lambda: None)
-        self.toolBar.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", self.referenceView.zoomOut)
+        self.toolBar.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.getIconFromSvg(icons.rotateClockwise), "Rotato Clockwise", lambda: None)
         self.toolBar.addAction(
@@ -102,17 +102,11 @@ class MainWindow(QMainWindow):
         self.undoAction.setShortcut("Ctrl+Z")
         self.undoAction.setStatusTip("Undo")
         self.undoAction.setIcon(self.getIconFromSvg(icons.undo))
-        self.undoAction.triggered.connect(self.slotUndo)
 
         self.redoAction = QAction("Redo", self)
         self.redoAction.setShortcut("Ctrl+Y")
         self.redoAction.setStatusTip("Redo")
         self.redoAction.setIcon(self.getIconFromSvg(icons.redo))
-        self.redoAction.triggered.connect(self.slotRedo)
-
-        self.addAction(self.actioOpenLeft)
-        self.addAction(self.actionOpenRight)
-        self.addAction(self.actionQuit)
 
     def initMenuBar(self):
         menuBar = self.menuBar()
@@ -130,6 +124,9 @@ class MainWindow(QMainWindow):
 
         viewMenu = menuBar.addMenu("View")
         zoomMenu = viewMenu.addMenu("Zoom")
+        zoomMenu.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
+        zoomMenu.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", self.referenceView.zoomOut)
+        zoomMenu.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
 
         panelMenu = viewMenu.addMenu("Panels")
         panelMenu.addAction(self.dockWidgetSelectedRegions.toggleViewAction())
