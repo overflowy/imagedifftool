@@ -1,8 +1,8 @@
 import sys
 
 import icons
-from image_view import ImageView, ImageViewDropHere
-from PyQt6.QtCore import QSettings, QSize, Qt, QTimer
+from image_view import ImageView, ImageViewWrapper
+from PyQt6.QtCore import QSettings, QSize, Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFileSystemModel, QIcon, QImage, QPalette, QPixmap, QResizeEvent
 from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QToolBar, QTreeView
 
@@ -29,12 +29,12 @@ class MainWindow(QMainWindow):
 
     def initDefaultSettings(self):
         self.resizeDocks(
-            [self.dockWidgetSamplePreview, self.dockWidgetSamples, self.dockWidgetSelectedRegions],
+            [self.dockWidgetSampleView, self.dockWidgetSamples, self.dockWidgetSelectedRegions],
             [300, 300, 300],
             Qt.Orientation.Horizontal,
         )
         self.resizeDocks(
-            [self.dockWidgetSamplePreview, self.dockWidgetSamples, self.dockWidgetSelectedRegions],
+            [self.dockWidgetSampleView, self.dockWidgetSamples, self.dockWidgetSelectedRegions],
             [200, 200, 200],
             Qt.Orientation.Vertical,
         )
@@ -50,13 +50,13 @@ class MainWindow(QMainWindow):
         self.resize(1400, 800)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
-        self.initToolBar()
         self.initActions()
         self.initReferenceView()
         self.initSamplePreview()
         self.initSamples()
         self.initSelectedRegions()
         self.initMenuBar()
+        self.initToolBar()
 
     def initToolBar(self):
         self.toolBar = QToolBar("Main Tool Bar")
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
         self.toolBar.addAction(self.getIconFromSvg(icons.move), "Move", lambda: None)
         self.toolBar.addAction(self.getIconFromSvg(icons.crop), "Crop to Selection", lambda: None)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", lambda: None)
+        self.toolBar.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
         self.toolBar.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", lambda: None)
         self.toolBar.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", lambda: None)
         self.toolBar.addSeparator()
@@ -83,15 +83,15 @@ class MainWindow(QMainWindow):
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
-        self.actioOpenLeft = QAction("Open Left", self)
-        self.actioOpenLeft.setShortcut("Ctrl+L")
+        self.actioOpenLeft = QAction("Open Reference", self)
+        self.actioOpenLeft.setShortcut("Ctrl+O")
         self.actioOpenLeft.setStatusTip("Open File")
-        self.actioOpenLeft.triggered.connect(self.slotOpenFile)
+        self.actioOpenLeft.triggered.connect(self.openReference)
 
-        self.actionOpenRight = QAction("Open Right", self)
+        self.actionOpenRight = QAction("Open Samples", self)
         self.actionOpenRight.setShortcut("Ctrl+R")
         self.actionOpenRight.setStatusTip("Open File")
-        self.actionOpenRight.triggered.connect(self.slotOpenFile)
+        self.actionOpenRight.triggered.connect(self.openReference)
 
         self.actionQuit = QAction("Quit", self)
         self.actionQuit.setShortcut("Ctrl+Q")
@@ -155,34 +155,27 @@ class MainWindow(QMainWindow):
         self.dockWidgetSamples.setWidget(listView)
 
     def initReferenceView(self):
-        self.referenceView = ImageViewDropHere()
-        self.setCentralWidget(self.referenceView)
+        self.referenceViewWrapper = ImageViewWrapper()
+        self.referenceView = self.referenceViewWrapper.imageView
+        self.setCentralWidget(self.referenceViewWrapper)
 
     def initSamplePreview(self):
-        self.dockWidgetSamplePreview = QDockWidget("Sample Preview")
-        self.sampleImageView = ImageView()
-        self.dockWidgetSamplePreview.setWidget(self.sampleImageView)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSamplePreview)
+        self.dockWidgetSampleView = QDockWidget("Sample Preview")
+        self.sampleView = ImageView()
+        self.dockWidgetSampleView.setWidget(self.sampleView)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSampleView)
 
     def getIconFromSvg(self, svgStr: str) -> QIcon:
         pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
         return QIcon(pixmap)
 
-    def slotOpenFile(self):
-        pass
-
-    def slotPointer(self):
-        pass
-
-    def slotUndo(self):
-        pass
-
-    def slotRedo(self):
+    @pyqtSlot()
+    def openReference(self):
         pass
 
     def resizeEvent(self, a0: QResizeEvent):
-        if not self.referenceView.imageView.zoomLevel:
-            self.referenceView.imageView.fitImage()
+        if not self.referenceViewWrapper.imageView.zoomLevel:
+            self.referenceViewWrapper.imageView.zoomFit()
         return super().resizeEvent(a0)
 
     def closeEvent(self, a0: QCloseEvent):
@@ -217,5 +210,6 @@ if __name__ == "__main__":
     darkPalette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Light, QColor(53, 53, 53))
     app.setPalette(darkPalette)
     window = MainWindow()
+    window.referenceViewWrapper.setImage("example.jpg")
     window.show()
     app.exec()

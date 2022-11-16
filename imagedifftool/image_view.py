@@ -2,19 +2,20 @@ from pathlib import Path
 
 import cv2
 from image_tools import debugShowOpenCVRect, getOpenCVImage, openCVToQImage
-from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal
+from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent
 from PyQt6.QtWidgets import (
     QFrame,
+    QGraphicsItem,
     QGraphicsPixmapItem,
     QGraphicsRectItem,
     QGraphicsScene,
     QGraphicsView,
     QLabel,
+    QMessageBox,
     QStatusBar,
     QVBoxLayout,
     QWidget,
-    QMessageBox,
 )
 
 
@@ -51,6 +52,8 @@ class DropHere(QLabel):
 
 
 class ImageView(QGraphicsView):
+    MAXIMUM_ZOOM = 10
+
     def __init__(self):
         super().__init__()
 
@@ -78,8 +81,9 @@ class ImageView(QGraphicsView):
 
         self.scene().addItem(self.pixmapItem)
 
-        self.rubberBandChanged.connect(self.addRectToScene)
+        self.rubberBandChanged.connect(self.addRectToScene)  # pyright: reportFunctionMemberAccess=false
 
+    @pyqtSlot(QRect, QPointF, QPointF)
     def addRectToScene(self, rubberBandRect: QRect, fromScenePoint: QPointF, toScenePoint: QPointF):
         if rubberBandRect.isNull():  # Selection stopped.
             graphicsRectItem = QGraphicsRectItem(
@@ -90,6 +94,11 @@ class ImageView(QGraphicsView):
             )
             graphicsRectItem.setParentItem(self.pixmapItem)
             graphicsRectItem.setPen(QColor(0, 255, 0))
+            graphicsRectItem.setFlags(
+                QGraphicsItem.GraphicsItemFlag.ItemIsSelectable
+                | QGraphicsItem.GraphicsItemFlag.ItemIsMovable
+                | QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges
+            )
 
             rect = graphicsRectItem.rect().toRect()
             debugShowOpenCVRect(
@@ -112,16 +121,18 @@ class ImageView(QGraphicsView):
             return False
 
         self.pixmapItem.setPixmap(QPixmap.fromImage(openCVToQImage(self.openCVImage)))
-        QTimer.singleShot(0, self.fitImage)
+        QTimer.singleShot(0, self.zoomFit)
         self.scene().setSceneRect(self.pixmapItem.boundingRect())
         return True
 
+    @pyqtSlot()
     def zoomIn(self):
         if self.zoomLevel >= self.MAXIMUM_ZOOM:
             self.zoomLevel = self.MAXIMUM_ZOOM
             return
         self.zoomLevel += 1
         self.scale(1.25, 1.25)
+
     def zoomOut(self):
         if self.zoomLevel == 0:
             self.zoomFit()
@@ -187,7 +198,7 @@ class ImageView(QGraphicsView):
         self.setCursor(Qt.CursorShape.ArrowCursor)
 
 
-class ImageViewDropHere(QWidget):
+class ImageViewWrapper(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -210,6 +221,7 @@ class ImageViewDropHere(QWidget):
         self.statusBar = QStatusBar()
         self.statusBar.showMessage("Ready")
 
+    @pyqtSlot(str)
     def setImage(self, filePath: str):
         if self.imageView.setImage(filePath):
             self.dropHere.hide()
