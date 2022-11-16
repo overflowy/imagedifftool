@@ -138,19 +138,9 @@ class ImageView(QGraphicsView):
             return
 
         if event.angleDelta().y() > 0:
-            factor = 1.25
-            self.zoomLevel += 1
+            self.zoomIn()
         else:
-            factor = 0.8
-            self.zoomLevel -= 1
-
-        if self.zoomLevel > 0:
-            self.scale(factor, factor)
-        elif self.zoomLevel == 0:
-            self.fitImage()
-        else:
-            self.zoomLevel = 0
-            self.fitImage()
+            self.zoomOut()
 
     def mousePressEvent(self, event: QMouseEvent):
         if not self.zoomLevel:
