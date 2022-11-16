@@ -83,15 +83,15 @@ class MainWindow(QMainWindow):
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
-        self.actioOpenLeft = QAction("Open Reference", self)
-        self.actioOpenLeft.setShortcut("Ctrl+O")
-        self.actioOpenLeft.setStatusTip("Open File")
-        self.actioOpenLeft.triggered.connect(self.openReference)
+        self.actionOpenReference = QAction("Open Reference", self)
+        self.actionOpenReference.setShortcut("Ctrl+O")
+        self.actionOpenReference.setStatusTip("Open File")
+        self.actionOpenReference.triggered.connect(self.openReference)
 
-        self.actionOpenRight = QAction("Open Samples", self)
-        self.actionOpenRight.setShortcut("Ctrl+R")
-        self.actionOpenRight.setStatusTip("Open File")
-        self.actionOpenRight.triggered.connect(self.openReference)
+        self.actionOpenSample = QAction("Open Sample(s)", self)
+        self.actionOpenSample.setShortcut("Ctrl+R")
+        self.actionOpenSample.setStatusTip("Open File")
+        self.actionOpenSample.triggered.connect(self.openReference)
 
         self.actionQuit = QAction("Quit", self)
         self.actionQuit.setShortcut("Ctrl+Q")
@@ -118,8 +118,8 @@ class MainWindow(QMainWindow):
         menuBar = self.menuBar()
 
         fileMenu = menuBar.addMenu("File")
-        fileMenu.addAction(self.actioOpenLeft)
-        fileMenu.addAction(self.actionOpenRight)
+        fileMenu.addAction(self.actionOpenReference)
+        fileMenu.addAction(self.actionOpenSample)
         fileMenu.addSeparator()
         fileMenu.addAction(self.actionQuit)
 
