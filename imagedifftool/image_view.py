@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 from image_tools import debugShowOpenCVRect, getOpenCVImage, openCVToQImage
 from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent, QTransform
 from PyQt6.QtWidgets import (
     QFrame,
     QGraphicsItem,
@@ -52,12 +52,13 @@ class DropHere(QLabel):
 
 
 class ImageView(QGraphicsView):
-    MAXIMUM_ZOOM = 10
+    MAXIMUM_ZOOM = 6
+    signalZoomChanged = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
 
-        self.zoomLevel = 0
+        self.currentZoom = 0
         self.prevFromScenePoint: QPointF
         self.prevToScenePoint: QPointF
         self.openCVImage: cv2.Mat
@@ -127,21 +128,26 @@ class ImageView(QGraphicsView):
 
     @pyqtSlot()
     def zoomIn(self):
-        if self.zoomLevel >= self.MAXIMUM_ZOOM:
-            self.zoomLevel = self.MAXIMUM_ZOOM
+        if self.currentZoom >= self.MAXIMUM_ZOOM:
+            self.currentZoom = self.MAXIMUM_ZOOM
             return
-        self.zoomLevel += 1
-        self.scale(1.25, 1.25)
+        self.currentZoom += 1
+        self.scale(2, 2)
+        self.signalZoomChanged.emit(self.currentZoom)
 
+    @pyqtSlot()
     def zoomOut(self):
-        if self.zoomLevel == 0:
+        if self.currentZoom == 0:
             self.zoomFit()
             return
-        self.zoomLevel -= 1
-        self.scale(0.8, 0.8)
+        self.currentZoom -= 1
+        self.signalZoomChanged.emit(self.currentZoom)
+        self.scale(0.5, 0.5)
 
+    @pyqtSlot()
     def zoomFit(self):
-        self.zoomLevel = 0
+        self.currentZoom = 0
+        self.signalZoomChanged.emit(self.currentZoom)
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
     def wheelEvent(self, event: QWheelEvent):
@@ -154,7 +160,7 @@ class ImageView(QGraphicsView):
             self.zoomOut()
 
     def mousePressEvent(self, event: QMouseEvent):
-        if not self.zoomLevel:
+        if not self.currentZoom:
             return super().mousePressEvent(event)
 
         if event.button() == Qt.MouseButton.RightButton:
@@ -170,7 +176,7 @@ class ImageView(QGraphicsView):
         return super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent):
-        if not self.zoomLevel:
+        if not self.currentZoom:
             return super().mouseReleaseEvent(event)
 
         if event.button() == Qt.MouseButton.RightButton:
