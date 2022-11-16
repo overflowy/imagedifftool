@@ -57,6 +57,7 @@ class MainWindow(QMainWindow):
         self.initSelectedRegions()
         self.initMenuBar()
         self.initToolBar()
+        self.initStatusBar()
 
     def initToolBar(self):
         self.toolBar = QToolBar("Main Tool Bar")
@@ -155,12 +156,16 @@ class MainWindow(QMainWindow):
         self.referenceViewWrapper = ImageViewWrapper()
         self.referenceView = self.referenceViewWrapper.imageView
         self.setCentralWidget(self.referenceViewWrapper)
+        self.centralWidget().layout().setContentsMargins(0, 0, 0, 0)
 
     def initSamplePreview(self):
         self.dockWidgetSampleView = QDockWidget("Sample Preview")
         self.sampleView = ImageView()
         self.dockWidgetSampleView.setWidget(self.sampleView)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSampleView)
+
+    def initStatusBar(self):
+        self.statusBar().showMessage("Ready")
 
     def getIconFromSvg(self, svgStr: str) -> QIcon:
         pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
@@ -171,7 +176,7 @@ class MainWindow(QMainWindow):
         pass
 
     def resizeEvent(self, a0: QResizeEvent):
-        if not self.referenceViewWrapper.imageView.zoomLevel:
+        if not self.referenceViewWrapper.imageView.currentZoom:
             self.referenceViewWrapper.imageView.zoomFit()
         return super().resizeEvent(a0)
 
