@@ -128,6 +128,9 @@ class ImageView(QGraphicsView):
             return
         self.zoomLevel -= 1
         self.scale(0.8, 0.8)
+
+    def zoomFit(self):
+        self.zoomLevel = 0
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
     def wheelEvent(self, event: QWheelEvent):
