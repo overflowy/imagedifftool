@@ -61,11 +61,11 @@ class MainWindow(QMainWindow):
         self.resize(1400, 800)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
 
-        self.initActions()
         self.initReferenceView()
         self.initSamplePreview()
         self.initSamples()
         self.initSelectedRegions()
+        self.initActions()
         self.initMenuBar()
         self.initToolBar()
         self.initStatusBar()
@@ -75,23 +75,21 @@ class MainWindow(QMainWindow):
         self.toolBar.setIconSize(QSize(18, 18))
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolBar)
 
-        self.toolBar.addAction(self.getIconFromSvg(icons.run), "Run", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.run), "Run", lambda: None)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.getIconFromSvg(icons.pointer), "Pointer", lambda: None)
-        self.toolBar.addAction(self.getIconFromSvg(icons.marquee), "Select Region", lambda: None)
-        self.toolBar.addAction(self.getIconFromSvg(icons.move), "Move", lambda: None)
-        self.toolBar.addAction(self.getIconFromSvg(icons.crop), "Crop to Selection", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.pointer), "Pointer", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.marquee), "Select Region", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.move), "Move", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.crop), "Crop to Selection", lambda: None)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
-        self.toolBar.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", self.referenceView.zoomOut)
-        self.toolBar.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
+        self.toolBar.addAction(getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
+        self.toolBar.addAction(getIconFromSvg(icons.zoomOut), "Zoom Out", self.referenceView.zoomOut)
+        self.toolBar.addAction(getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
         self.toolBar.addSeparator()
-        self.toolBar.addAction(self.getIconFromSvg(icons.rotateClockwise), "Rotato Clockwise", lambda: None)
-        self.toolBar.addAction(
-            self.getIconFromSvg(icons.rotateCounterClockwise), "Rotato Counter-Clockwise", lambda: None
-        )
-        self.toolBar.addAction(self.getIconFromSvg(icons.flipHorizontal), "Flip Horizontal", lambda: None)
-        self.toolBar.addAction(self.getIconFromSvg(icons.flipVertical), "Flip Vertical", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.rotateClockwise), "Rotato Clockwise", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.rotateCounterClockwise), "Rotato Counter-Clockwise", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.flipHorizontal), "Flip Horizontal", lambda: None)
+        self.toolBar.addAction(getIconFromSvg(icons.flipVertical), "Flip Vertical", lambda: None)
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
@@ -197,21 +195,30 @@ class MainWindow(QMainWindow):
 
         addWidgetWithSpacing(self.positionLabel)
         addWidgetWithSpacing(self.resolutionLabel)
+
         self.zoomSlider = QSlider(Qt.Orientation.Horizontal)
         self.zoomSlider.setPageStep(1)
         self.zoomSlider.setSingleStep(1)
-        self.zoomSlider.setFixedWidth(100)
+        self.zoomSlider.setMaximumWidth(100)
         self.zoomSlider.setRange(1, self.referenceView.MAXIMUM_ZOOM)
+        toolBar.addWidget(self.zoomSlider)
+
         zoomLabel = QLabel("100%")
-        self.statusBar().addPermanentWidget(self.zoomSlider)
-        self.statusBar().addPermanentWidget(zoomLabel)
-        self.referenceView.signalZoomChanged.connect(self.zoomSlider.setSliderPosition)
+        toolBar.addWidget(zoomLabel)
+
+        self.referenceView.zoomChangedSignal.connect(self.zoomSlider.setSliderPosition)
         self.zoomSlider.sliderMoved.connect(self.referenceView.setZoomFromSlider)
         self.zoomSlider.valueChanged.connect(lambda: zoomLabel.setText(f"{self.zoomSlider.value()*100}%"))
+        self.referenceView.positionChangedSignal.connect(self.updatePositionLabel)
+        self.referenceView.imageChangedSignal.connect(self.updateResolutionLabel)
 
-    def getIconFromSvg(self, svgStr: str) -> QIcon:
-        pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
-        return QIcon(pixmap)
+    def updatePositionLabel(self, position: QPointF):
+        x = position.toPoint().x()
+        y = position.toPoint().y()
+        self.positionLabel.setText(f"{x}, {y}px")
+
+    def updateResolutionLabel(self, image: QImage):
+        self.resolutionLabel.setText(f"{image.width()}x{image.height()}px")
 
     @pyqtSlot()
     def openReference(self):
