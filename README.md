@@ -1,2 +1,2 @@
-# image-diff-tool
+# imagedifftool
 Select and compare arbitrary regions from images using OpenCV
