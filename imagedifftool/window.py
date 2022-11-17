@@ -166,6 +166,17 @@ class MainWindow(QMainWindow):
 
     def initStatusBar(self):
         self.statusBar().showMessage("Ready")
+        self.zoomSlider = QSlider(Qt.Orientation.Horizontal)
+        self.zoomSlider.setPageStep(1)
+        self.zoomSlider.setSingleStep(1)
+        self.zoomSlider.setFixedWidth(100)
+        self.zoomSlider.setRange(1, self.referenceView.MAXIMUM_ZOOM)
+        zoomLabel = QLabel("100%")
+        self.statusBar().addPermanentWidget(self.zoomSlider)
+        self.statusBar().addPermanentWidget(zoomLabel)
+        self.referenceView.signalZoomChanged.connect(self.zoomSlider.setSliderPosition)
+        self.zoomSlider.sliderMoved.connect(self.referenceView.setZoomFromSlider)
+        self.zoomSlider.valueChanged.connect(lambda: zoomLabel.setText(f"{self.zoomSlider.value()*100}%"))
 
     def getIconFromSvg(self, svgStr: str) -> QIcon:
         pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
