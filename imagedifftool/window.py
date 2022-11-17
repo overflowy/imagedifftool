@@ -2,9 +2,20 @@ import sys
 
 import icons
 from image_view import ImageView, ImageViewWrapper
-from PyQt6.QtCore import QSettings, QSize, Qt, QTimer, pyqtSlot
+from image_tools import getIconFromSvg
+from PyQt6.QtCore import QPointF, QSettings, QSize, Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFileSystemModel, QIcon, QImage, QPalette, QPixmap, QResizeEvent
-from PyQt6.QtWidgets import QDockWidget, QLabel, QListView, QMainWindow, QSlider, QToolBar, QTreeView
+from PyQt6.QtWidgets import (
+    QDockWidget,
+    QLabel,
+    QListView,
+    QMainWindow,
+    QSlider,
+    QToolBar,
+    QTreeView,
+    QSizePolicy,
+    QWidget,
+)
 
 
 class MainWindow(QMainWindow):
@@ -102,12 +113,12 @@ class MainWindow(QMainWindow):
         self.undoAction = QAction("Undo", self)
         self.undoAction.setShortcut("Ctrl+Z")
         self.undoAction.setStatusTip("Undo")
-        self.undoAction.setIcon(self.getIconFromSvg(icons.undo))
+        self.undoAction.setIcon(getIconFromSvg(icons.undo))
 
         self.redoAction = QAction("Redo", self)
         self.redoAction.setShortcut("Ctrl+Y")
         self.redoAction.setStatusTip("Redo")
-        self.redoAction.setIcon(self.getIconFromSvg(icons.redo))
+        self.redoAction.setIcon(getIconFromSvg(icons.redo))
 
     def initMenuBar(self):
         menuBar = self.menuBar()
@@ -125,9 +136,9 @@ class MainWindow(QMainWindow):
 
         viewMenu = menuBar.addMenu("View")
         zoomMenu = viewMenu.addMenu("Zoom")
-        zoomMenu.addAction(self.getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
-        zoomMenu.addAction(self.getIconFromSvg(icons.zoomOut), "Zoom Out", self.referenceView.zoomOut)
-        zoomMenu.addAction(self.getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
+        zoomMenu.addAction(getIconFromSvg(icons.zoomIn), "Zoom In", self.referenceView.zoomIn)
+        zoomMenu.addAction(getIconFromSvg(icons.zoomOut), "Zoom Out", self.referenceView.zoomOut)
+        zoomMenu.addAction(getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
 
         panelMenu = viewMenu.addMenu("Panels")
         panelMenu.addAction(self.dockWidgetSelectedRegions.toggleViewAction())

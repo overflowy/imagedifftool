@@ -1,5 +1,5 @@
 import cv2
-from PyQt6.QtGui import QImage
+from PyQt6.QtGui import QImage, QIcon, QPixmap
 
 
 def getOpenCVImage(filePath: str) -> cv2.Mat:
@@ -12,6 +12,11 @@ def toGrayScale(openCVImage: cv2.Mat) -> cv2.Mat:
 
 def openCVToQImage(openCVImage: cv2.Mat) -> QImage:
     return QImage(openCVImage.data, openCVImage.shape[1], openCVImage.shape[0], QImage.Format.Format_BGR888)
+
+
+def getIconFromSvg(svgStr: str) -> QIcon:
+    pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
+    return QIcon(pixmap)
 
 
 def debugShowOpenCVRect(
