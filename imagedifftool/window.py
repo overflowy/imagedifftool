@@ -4,7 +4,7 @@ import icons
 from image_view import ImageView, ImageViewWrapper
 from PyQt6.QtCore import QSettings, QSize, Qt, QTimer, pyqtSlot
 from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFileSystemModel, QIcon, QImage, QPalette, QPixmap, QResizeEvent
-from PyQt6.QtWidgets import QDockWidget, QListView, QMainWindow, QToolBar, QTreeView
+from PyQt6.QtWidgets import QDockWidget, QLabel, QListView, QMainWindow, QSlider, QToolBar, QTreeView
 
 
 class MainWindow(QMainWindow):
@@ -84,20 +84,20 @@ class MainWindow(QMainWindow):
 
     # pyright: reportFunctionMemberAccess=false
     def initActions(self):
-        self.actionOpenReference = QAction("Open Reference", self)
-        self.actionOpenReference.setShortcut("Ctrl+O")
-        self.actionOpenReference.setStatusTip("Open File")
-        self.actionOpenReference.triggered.connect(self.openReference)
+        self.openReferenceAction = QAction("Open Reference", self)
+        self.openReferenceAction.setShortcut("Ctrl+O")
+        self.openReferenceAction.setStatusTip("Open reference image file for comparison")
+        self.openReferenceAction.triggered.connect(self.openReference)
 
-        self.actionOpenSample = QAction("Open Sample(s)", self)
-        self.actionOpenSample.setShortcut("Ctrl+R")
-        self.actionOpenSample.setStatusTip("Open File")
-        self.actionOpenSample.triggered.connect(self.openReference)
+        self.openSampleAction = QAction("Open Sample(s)", self)
+        self.openSampleAction.setShortcut("Ctrl+R")
+        self.openSampleAction.setStatusTip("Open sample image file(s) for comparison")
+        self.openSampleAction.triggered.connect(self.openReference)
 
-        self.actionQuit = QAction("Quit", self)
-        self.actionQuit.setShortcut("Ctrl+Q")
-        self.actionQuit.setStatusTip("Quit")
-        self.actionQuit.triggered.connect(self.close)
+        self.quitAction = QAction("Quit", self)
+        self.quitAction.setShortcut("Ctrl+Q")
+        self.quitAction.setStatusTip("Quit application")
+        self.quitAction.triggered.connect(self.close)
 
         self.undoAction = QAction("Undo", self)
         self.undoAction.setShortcut("Ctrl+Z")
@@ -113,10 +113,10 @@ class MainWindow(QMainWindow):
         menuBar = self.menuBar()
 
         fileMenu = menuBar.addMenu("File")
-        fileMenu.addAction(self.actionOpenReference)
-        fileMenu.addAction(self.actionOpenSample)
+        fileMenu.addAction(self.openReferenceAction)
+        fileMenu.addAction(self.openSampleAction)
         fileMenu.addSeparator()
-        fileMenu.addAction(self.actionQuit)
+        fileMenu.addAction(self.quitAction)
 
         editMenu = menuBar.addMenu("Edit")
         editMenu.addAction(self.undoAction)
