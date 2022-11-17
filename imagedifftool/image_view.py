@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 from image_tools import debugShowOpenCVRect, getOpenCVImage, openCVToQImage
 from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent, QImage
 from PyQt6.QtWidgets import (
     QFrame,
     QGraphicsItem,
@@ -20,7 +20,7 @@ from PyQt6.QtWidgets import (
 
 
 class DropHere(QLabel):
-    signalFileDropped = pyqtSignal(str)
+    fileDroppedSignal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -46,7 +46,7 @@ class DropHere(QLabel):
 
     def dropEvent(self, a0: QDropEvent):
         if a0.mimeData().hasImage:
-            self.signalFileDropped.emit(a0.mimeData().urls()[0].toLocalFile())
+            self.fileDroppedSignal.emit(a0.mimeData().urls()[0].toLocalFile())
         else:
             a0.ignore()
 
@@ -54,7 +54,9 @@ class DropHere(QLabel):
 class ImageView(QGraphicsView):
     MINIMUM_ZOOM = 1
     MAXIMUM_ZOOM = 6
-    signalZoomChanged = pyqtSignal(int)
+    zoomChangedSignal = pyqtSignal(int)
+    positionChangedSignal = pyqtSignal(QPointF)
+    imageChangedSignal = pyqtSignal(QImage)
 
     def __init__(self):
         super().__init__()
@@ -67,7 +69,7 @@ class ImageView(QGraphicsView):
         self.initUI()
 
     def initUI(self):
-        self.setBackgroundBrush(QBrush(QColor("#000000")))
+        self.setBackgroundBrush(QBrush(QColor(10, 10, 10)))
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
@@ -122,9 +124,12 @@ class ImageView(QGraphicsView):
             QMessageBox.critical(self, "Error", "Could not load image. Image may be corrupt or unsupported.")
             return False
 
-        self.pixmapItem.setPixmap(QPixmap.fromImage(openCVToQImage(self.openCVImage)))
+        image = openCVToQImage(self.openCVImage)
+        self.pixmapItem.setPixmap(QPixmap.fromImage(image))
         QTimer.singleShot(0, self.zoomFit)
         self.scene().setSceneRect(self.pixmapItem.boundingRect())
+
+        self.imageChangedSignal.emit(image)
         return True
 
     @pyqtSlot()
@@ -134,7 +139,7 @@ class ImageView(QGraphicsView):
             self.currentZoom = self.MAXIMUM_ZOOM
             return
         self.scale(2, 2)
-        self.signalZoomChanged.emit(self.currentZoom)
+        self.zoomChangedSignal.emit(self.currentZoom)
 
     @pyqtSlot()
     def zoomOut(self):
@@ -144,12 +149,12 @@ class ImageView(QGraphicsView):
             self.zoomFit()
             return
         self.scale(0.5, 0.5)
-        self.signalZoomChanged.emit(self.currentZoom)
+        self.zoomChangedSignal.emit(self.currentZoom)
 
     @pyqtSlot()
     def zoomFit(self):
         self.currentZoom = self.MINIMUM_ZOOM
-        self.signalZoomChanged.emit(self.currentZoom)
+        self.zoomChangedSignal.emit(self.currentZoom)
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
     @pyqtSlot(int)
@@ -200,6 +205,10 @@ class ImageView(QGraphicsView):
             return super().mouseReleaseEvent(modifiedEvent)
         return super().mouseReleaseEvent(event)
 
+    def mouseMoveEvent(self, event: QMouseEvent):
+        self.positionChangedSignal.emit(self.mapToScene(event.pos()))
+        return super().mouseMoveEvent(event)
+
     def event(self, event: QEvent) -> bool:
         """Override event to prevent the context menu from appearing."""
         if event.type() == QEvent.Type.ContextMenu:
@@ -223,7 +232,7 @@ class ImageViewWrapper(QWidget):
         self.setLayout(QVBoxLayout())
 
         self.dropHere = DropHere()
-        self.dropHere.signalFileDropped.connect(self.setImage)
+        self.dropHere.fileDroppedSignal.connect(self.setImage)
         self.imageView = ImageView()
         self.imageView.hide()
 

@@ -4,7 +4,7 @@ import icons
 from image_view import ImageView, ImageViewWrapper
 from image_tools import getIconFromSvg
 from PyQt6.QtCore import QPointF, QSettings, QSize, Qt, QTimer, pyqtSlot
-from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFileSystemModel, QIcon, QImage, QPalette, QPixmap, QResizeEvent
+from PyQt6.QtGui import QAction, QCloseEvent, QColor, QFileSystemModel, QImage, QPalette, QResizeEvent
 from PyQt6.QtWidgets import (
     QDockWidget,
     QLabel,
