@@ -152,6 +152,13 @@ class ImageView(QGraphicsView):
         self.signalZoomChanged.emit(self.currentZoom)
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
+    @pyqtSlot(int)
+    def setZoomFromSlider(self, value: int):
+        if value >= self.currentZoom:
+            self.zoomIn()
+        elif value <= self.currentZoom:
+            self.zoomOut()
+
     def wheelEvent(self, event: QWheelEvent):
         if self.pixmapItem.pixmap().isNull():
             return
