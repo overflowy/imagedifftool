@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
 
     def initToolBar(self):
         self.toolBar = QToolBar("Main Tool Bar")
+        self.toolBar.setObjectName("mainToolBar")
         self.toolBar.setIconSize(QSize(18, 18))
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolBar)
 
