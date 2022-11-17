@@ -187,8 +187,8 @@ class MainWindow(QMainWindow):
         pass
 
     def resizeEvent(self, a0: QResizeEvent):
-        if not self.referenceViewWrapper.imageView.currentZoom:
-            self.referenceViewWrapper.imageView.zoomFit()
+        if self.referenceView.currentZoom == self.referenceView.MINIMUM_ZOOM:
+            self.referenceView.zoomFit()
         return super().resizeEvent(a0)
 
     def closeEvent(self, a0: QCloseEvent):
