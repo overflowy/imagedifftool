@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 from image_tools import debugShowOpenCVRect, getOpenCVImage, openCVToQImage
 from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent, QTransform
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent
 from PyQt6.QtWidgets import (
     QFrame,
     QGraphicsItem,
@@ -52,13 +52,14 @@ class DropHere(QLabel):
 
 
 class ImageView(QGraphicsView):
+    MINIMUM_ZOOM = 1
     MAXIMUM_ZOOM = 6
     signalZoomChanged = pyqtSignal(int)
 
     def __init__(self):
         super().__init__()
 
-        self.currentZoom = 0
+        self.currentZoom = self.MINIMUM_ZOOM
         self.prevFromScenePoint: QPointF
         self.prevToScenePoint: QPointF
         self.openCVImage: cv2.Mat
@@ -128,25 +129,26 @@ class ImageView(QGraphicsView):
 
     @pyqtSlot()
     def zoomIn(self):
-        if self.currentZoom >= self.MAXIMUM_ZOOM:
+        self.currentZoom += 1
+        if self.currentZoom > self.MAXIMUM_ZOOM:
             self.currentZoom = self.MAXIMUM_ZOOM
             return
-        self.currentZoom += 1
         self.scale(2, 2)
         self.signalZoomChanged.emit(self.currentZoom)
 
     @pyqtSlot()
     def zoomOut(self):
-        if self.currentZoom == 0:
+        self.currentZoom -= 1
+        if self.currentZoom <= self.MINIMUM_ZOOM:
+            self.currentZoom = self.MINIMUM_ZOOM
             self.zoomFit()
             return
-        self.currentZoom -= 1
-        self.signalZoomChanged.emit(self.currentZoom)
         self.scale(0.5, 0.5)
+        self.signalZoomChanged.emit(self.currentZoom)
 
     @pyqtSlot()
     def zoomFit(self):
-        self.currentZoom = 0
+        self.currentZoom = self.MINIMUM_ZOOM
         self.signalZoomChanged.emit(self.currentZoom)
         self.fitInView(self.pixmapItem, Qt.AspectRatioMode.KeepAspectRatio)
 
