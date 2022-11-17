@@ -171,12 +171,32 @@ class MainWindow(QMainWindow):
 
     def initSamplePreview(self):
         self.dockWidgetSampleView = QDockWidget("Sample Preview")
+        self.dockWidgetSampleView.setObjectName("samplePreviewPanel")
         self.sampleView = ImageView()
         self.dockWidgetSampleView.setWidget(self.sampleView)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockWidgetSampleView)
 
     def initStatusBar(self):
         self.statusBar().showMessage("Ready")
+        toolBar = QToolBar()
+        toolBar.setMaximumWidth(400)
+        self.statusBar().addPermanentWidget(toolBar)
+
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        toolBar.addWidget(spacer)
+
+        def addWidgetWithSpacing(widget: QWidget):
+            toolBar.addWidget(widget)
+            toolBar.addWidget(QLabel(" "))
+            toolBar.addSeparator()
+            toolBar.addWidget(QLabel(" "))
+
+        self.positionLabel = QLabel()
+        self.resolutionLabel = QLabel()
+
+        addWidgetWithSpacing(self.positionLabel)
+        addWidgetWithSpacing(self.resolutionLabel)
         self.zoomSlider = QSlider(Qt.Orientation.Horizontal)
         self.zoomSlider.setPageStep(1)
         self.zoomSlider.setSingleStep(1)
