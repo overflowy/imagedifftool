@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "image-diff-tool"
+name = "imagedifftool"
 version = "0.1.0"
 description = "Select and compare arbitrary regions from images using OpenCV"
 authors = ["overflowy <overflowy@riseup.net>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "image_diff_tool" }]
+packages = [{ include = "imagedifftool" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
