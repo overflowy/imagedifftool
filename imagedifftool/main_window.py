@@ -140,8 +140,9 @@ class MainWindow(QMainWindow):
         zoomMenu.addAction(getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
 
         panelMenu = viewMenu.addMenu("Panels")
-        panelMenu.addAction(self.dockWidgetSelectedRegions.toggleViewAction())
         panelMenu.addAction(self.dockWidgetSamples.toggleViewAction())
+        panelMenu.addAction(self.dockWidgetSampleView.toggleViewAction())
+        panelMenu.addAction(self.dockWidgetSelectedRegions.toggleViewAction())
 
         settingsMenu = menuBar.addMenu("Settings")
         settingsMenu.addAction("Restore Default Settings")
