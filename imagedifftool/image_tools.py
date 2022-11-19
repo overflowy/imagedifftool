@@ -19,6 +19,11 @@ def getIconFromSvg(svgStr: str) -> QIcon:
     return QIcon(pixmap)
 
 
+def debugShowCVImage(openCVImage: cv2.Mat):
+    cv2.namedWindow("DEBUG", cv2.WINDOW_NORMAL)
+    cv2.imshow("DEBUG", openCVImage)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 def debugShowOpenCVRect(
     openCVImage: cv2.Mat,
     topLeft: tuple[int, int],
@@ -27,6 +32,7 @@ def debugShowOpenCVRect(
     thickness=2,
 ):
     cv2.rectangle(openCVImage, topLeft, bottomRight, color, thickness)
+    cv2.namedWindow("DEBUG", cv2.WINDOW_NORMAL)
     cv2.imshow("DEBUG", openCVImage)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
