@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import cv2
-from image_tools import debugShowOpenCVRect, getOpenCVImage, openCVToQImage
+from image_tools import debugShowOpenCVImageRect, debugShowOpenCVImage, getOpenCVImage, openCVToQImage
 from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent, QImage
 from PyQt6.QtWidgets import (
@@ -104,10 +104,11 @@ class ImageView(QGraphicsView):
                 | QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges
             )
 
-            rect = graphicsRectItem.rect().toRect()
-            debugShowOpenCVRect(
-                self.openCVImage, (rect.x(), rect.y()), (rect.x() + rect.width(), rect.y() + rect.height())
-            )
+            # rect = graphicsRectItem.rect().toRect()
+            # debugShowOpenCVRect(
+            #     self.openCVImage, (rect.x(), rect.y()), (rect.x() + rect.width(), rect.y() + rect.height())
+            # )
+            debugShowCVImage(self.openCVImage)
 
         else:
             self.prevFromScenePoint = fromScenePoint

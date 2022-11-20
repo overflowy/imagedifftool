@@ -14,17 +14,19 @@ def openCVToQImage(openCVImage: cv2.Mat) -> QImage:
     return QImage(openCVImage.data, openCVImage.shape[1], openCVImage.shape[0], QImage.Format.Format_BGR888)
 
 
-def getIconFromSvg(svgStr: str) -> QIcon:
+def getIconFromSvg(svgStr: str, color: str = "white", strokeWidth: int = 2) -> QIcon:
     pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
     return QIcon(pixmap)
 
 
-def debugShowCVImage(openCVImage: cv2.Mat):
+def debugShowOpenCVImage(openCVImage: cv2.Mat):
     cv2.namedWindow("DEBUG", cv2.WINDOW_NORMAL)
     cv2.imshow("DEBUG", openCVImage)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-def debugShowOpenCVRect(
+
+
+def debugShowOpenCVImageRect(
     openCVImage: cv2.Mat,
     topLeft: tuple[int, int],
     bottomRight: tuple[int, int],
