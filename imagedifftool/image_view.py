@@ -1,7 +1,13 @@
 from pathlib import Path
 
 import cv2
-from image_tools import debugShowOpenCVImageRect, debugShowOpenCVImage, getOpenCVImage, openCVToQImage
+from image_tools import (
+    debugShowOpenCVImageRect,
+    debugShowOpenCVImage,
+    rotateOpenCvImage,
+    getOpenCVImage,
+    openCVToQImage,
+)
 from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent, QImage
 from PyQt6.QtWidgets import (
@@ -105,10 +111,10 @@ class ImageView(QGraphicsView):
             )
 
             # rect = graphicsRectItem.rect().toRect()
-            # debugShowOpenCVRect(
+            # debugShowOpenCVImageRect(
             #     self.openCVImage, (rect.x(), rect.y()), (rect.x() + rect.width(), rect.y() + rect.height())
             # )
-            debugShowCVImage(self.openCVImage)
+            debugShowOpenCVImage(rotateOpenCvImage(self.openCVImage, 90))
 
         else:
             self.prevFromScenePoint = fromScenePoint
@@ -164,6 +170,12 @@ class ImageView(QGraphicsView):
             self.zoomIn()
         elif value <= self.currentZoom:
             self.zoomOut()
+
+    @pyqtSlot(int)
+    def rotateImage(self, angle: int):
+        self.openCVImage = rotateOpenCvImage(self.openCVImage, angle)
+        self.pixmapItem.setPixmap(QPixmap.fromImage(openCVToQImage(self.openCVImage)))
+        self.scene().setSceneRect(self.pixmapItem.boundingRect())
 
     def wheelEvent(self, event: QWheelEvent):
         if self.pixmapItem.pixmap().isNull():
