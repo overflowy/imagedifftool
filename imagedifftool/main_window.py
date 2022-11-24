@@ -88,12 +88,12 @@ class MainWindow(QMainWindow):
         self.toolBar.addAction(getIconFromSvg(icons.zoomFit), "Zoom Fit", self.referenceView.zoomFit)
         self.toolBar.addSeparator()
         self.toolBar.addAction(
-            getIconFromSvg(icons.rotateClockwise), "Rotato Clockwise", lambda: self.referenceView.rotate(90)
+            getIconFromSvg(icons.rotateClockwise), "Rotato Clockwise", self.referenceView.rotateClockwise
         )
         self.toolBar.addAction(
             getIconFromSvg(icons.rotateCounterClockwise),
             "Rotato Counter-Clockwise",
-            lambda: self.referenceView.rotate(-90),
+            self.referenceView.rotateCounterClockwise,
         )
         self.toolBar.addAction(getIconFromSvg(icons.flipHorizontal), "Flip Horizontal", lambda: None)
         self.toolBar.addAction(getIconFromSvg(icons.flipVertical), "Flip Vertical", lambda: None)
