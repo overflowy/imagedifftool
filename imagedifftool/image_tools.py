@@ -14,11 +14,12 @@ def openCVToQImage(openCVImage: cv2.Mat) -> QImage:
     return QImage(openCVImage.data, openCVImage.shape[1], openCVImage.shape[0], QImage.Format.Format_BGR888)
 
 
-def rotateOpenCvImage(openCVImage: cv2.Mat, angle: int) -> cv2.Mat:
-    (h, w) = openCVImage.shape[:2]
-    center = (w // 2, h // 2)
-    M = cv2.getRotationMatrix2D(center, angle, 1.0)
-    return cv2.warpAffine(openCVImage, M, (w, h))
+def rotateClockwise(openCVImage: cv2.Mat) -> cv2.Mat:
+    return cv2.rotate(openCVImage, cv2.ROTATE_90_CLOCKWISE)
+
+
+def rotateCounterClockwise(openCVImage: cv2.Mat) -> cv2.Mat:
+    return cv2.rotate(openCVImage, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
 
 def getIconFromSvg(svgStr: str, color: str = "white", strokeWidth: int = 2) -> QIcon:
