@@ -22,7 +22,7 @@ def rotateCounterClockwise(openCVImage: cv2.Mat) -> cv2.Mat:
     return cv2.rotate(openCVImage, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
 
-def getIconFromSvg(svgStr: str, color: str = "white", strokeWidth: int = 2) -> QIcon:
+def getIconFromSvg(svgStr: str) -> QIcon:
     pixmap = QPixmap.fromImage(QImage.fromData(svgStr.encode()))  # type: ignore
     return QIcon(pixmap)
 
