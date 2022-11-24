@@ -2,17 +2,17 @@ from pathlib import Path
 
 import cv2
 from image_tools import (
-    debugShowOpenCVImageRect,
     debugShowOpenCVImage,
-    rotateOpenCvImage,
+    debugShowOpenCVImageRect,
     getOpenCVImage,
     openCVToQImage,
+    rotateClockwise,
+    rotateCounterClockwise,
 )
-from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QMouseEvent, QPixmap, QWheelEvent, QImage
+from PyQt6.QtCore import QEvent, QPointF, QRect, Qt, QTimer, pyqtSignal, pyqtSlot, QPropertyAnimation
+from PyQt6.QtGui import QBrush, QColor, QDragEnterEvent, QDropEvent, QImage, QMouseEvent, QPixmap, QWheelEvent
 from PyQt6.QtWidgets import (
     QFrame,
-    QGraphicsItem,
     QGraphicsPixmapItem,
     QGraphicsRectItem,
     QGraphicsScene,
@@ -23,6 +23,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from d import d
 
 
 class DropHere(QLabel):
@@ -104,17 +106,11 @@ class ImageView(QGraphicsView):
             )
             graphicsRectItem.setParentItem(self.pixmapItem)
             graphicsRectItem.setPen(QColor(0, 255, 0))
-            graphicsRectItem.setFlags(
-                QGraphicsItem.GraphicsItemFlag.ItemIsSelectable
-                | QGraphicsItem.GraphicsItemFlag.ItemIsMovable
-                | QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges
-            )
 
-            # rect = graphicsRectItem.rect().toRect()
-            # debugShowOpenCVImageRect(
-            #     self.openCVImage, (rect.x(), rect.y()), (rect.x() + rect.width(), rect.y() + rect.height())
-            # )
-            debugShowOpenCVImage(rotateOpenCvImage(self.openCVImage, 90))
+            rect = graphicsRectItem.rect().toRect()
+            debugShowOpenCVImageRect(
+                self.openCVImage, (rect.x(), rect.y()), (rect.x() + rect.width(), rect.y() + rect.height())
+            )
 
         else:
             self.prevFromScenePoint = fromScenePoint
@@ -171,11 +167,13 @@ class ImageView(QGraphicsView):
         elif value <= self.currentZoom:
             self.zoomOut()
 
-    @pyqtSlot(int)
-    def rotateImage(self, angle: int):
-        self.openCVImage = rotateOpenCvImage(self.openCVImage, angle)
-        self.pixmapItem.setPixmap(QPixmap.fromImage(openCVToQImage(self.openCVImage)))
-        self.scene().setSceneRect(self.pixmapItem.boundingRect())
+    @pyqtSlot()
+    def rotateClockwise(self):
+        self.rotate(90)
+
+    @pyqtSlot()
+    def rotateCounterClockwise(self):
+        self.rotate(-90)
 
     def wheelEvent(self, event: QWheelEvent):
         if self.pixmapItem.pixmap().isNull():
